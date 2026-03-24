@@ -1,0 +1,71 @@
+<?php
+
+use App\Http\Controllers\Admin\DemandeController;
+use App\Http\Controllers\Admin\EmployeController;
+use App\Http\Controllers\Admin\StatistiqueController as AdminStatistiqueController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Agent\PresenceController;
+use App\Http\Controllers\Agent\RapportController;
+use App\Http\Controllers\Agent\StatistiqueController as AgentStatistiqueController;
+use App\Http\Controllers\Agent\TempsTravailController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Employe\DemandeCongeController;
+use App\Http\Controllers\Employe\DemandePermissionController;
+use App\Http\Controllers\Employe\HistoriqueController;
+use App\Http\Controllers\Employe\PointageController;
+use App\Http\Controllers\Employe\TempsTravailController as EmployeTempsTravailController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth'])
+    ->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // ADMIN
+    Route::prefix('admin')->name('admin.')->middleware('role:administrateur')->group(function () {
+        Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
+
+        Route::resource('utilisateurs', UserController::class);
+        Route::resource('employes', EmployeController::class);
+        Route::resource('demandes', DemandeController::class)->only(['index', 'show', 'update']);
+        Route::get('/statistiques', [AdminStatistiqueController::class, 'index'])->name('statistiques.index');
+    });
+
+    // AGENT D'ACCUEIL
+    Route::prefix('agent')->name('agent.')->middleware('role:agent_accueil')->group(function () {
+        Route::view('/dashboard', 'agent.dashboard')->name('dashboard');
+
+        Route::get('/presences', [PresenceController::class, 'index'])->name('presences.index');
+        Route::get('/temps-travail', [TempsTravailController::class, 'index'])->name('temps-travail.index');
+        Route::get('/rapports', [RapportController::class, 'index'])->name('rapports.index');
+        Route::get('/statistiques', [AgentStatistiqueController::class, 'index'])->name('statistiques.index');
+    });
+
+    // EMPLOYE
+    Route::prefix('employe')->name('employe.')->middleware('role:employe')->group(function () {
+        Route::view('/dashboard', 'employe.dashboard')->name('dashboard');
+
+        Route::get('/pointage', [PointageController::class, 'index'])->name('pointage.index');
+        Route::get('/historique', [HistoriqueController::class, 'index'])->name('historique.index');
+        Route::get('/temps-travail', [EmployeTempsTravailController::class, 'index'])->name('temps-travail.index');
+
+        Route::get('/demandes/conges', [DemandeCongeController::class, 'index'])->name('demandes.conges.index');
+        Route::get('/demandes/conges/create', [DemandeCongeController::class, 'create'])->name('demandes.conges.create');
+        Route::post('/demandes/conges', [DemandeCongeController::class, 'store'])->name('demandes.conges.store');
+
+        Route::get('/demandes/permissions', [DemandePermissionController::class, 'index'])->name('demandes.permissions.index');
+        Route::get('/demandes/permissions/create', [DemandePermissionController::class, 'create'])->name('demandes.permissions.create');
+        Route::post('/demandes/permissions', [DemandePermissionController::class, 'store'])->name('demandes.permissions.store');
+    });
+});
+
+require __DIR__.'/auth.php';
