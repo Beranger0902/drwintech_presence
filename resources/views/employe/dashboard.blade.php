@@ -1,250 +1,995 @@
-<x-app-layout>
-    <div class="h-screen overflow-hidden bg-[#eef3f8]">
-        <div class="flex h-screen">
-            <!-- Sidebar -->
-            <aside class="w-[280px] bg-gradient-to-b from-[#0f2747] to-[#18365d] text-white flex flex-col">
-                <div class="flex items-center gap-4 px-6 py-5 border-b border-white/10">
-                    <img
-                        src="https://ui-avatars.com/api/?name=Employe&background=ffffff&color=16365d&size=100"
-                        alt="Profil"
-                        class="w-14 h-14 rounded-full border border-white/20"
-                    >
-                    <h2 class="text-[22px] font-semibold">Employé</h2>
-                </div>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de bord Employé</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-                <nav class="flex-1 px-4 py-5 space-y-1.5 text-[15px]">
-                    <a href="{{ route('employe.dashboard') }}"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#1e5aa8] font-medium shadow-sm">
-                        <span class="text-[16px]">📋</span>
-                        <span>Tableau de bord</span>
-                    </a>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-                    <a href="{{ route('employe.pointage.index') }}"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/90">
-                        <span class="text-[16px]">✅</span>
-                        <span>Pointage de présence</span>
-                    </a>
+        body {
+            font-family: Arial, sans-serif;
+            background: #dfe8f5;
+            min-height: 100vh;
+            color: #35527c;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
 
-                    <a href="{{ route('employe.historique.index') }}"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/90">
-                        <span class="text-[16px]">📄</span>
-                        <span>Historique</span>
-                    </a>
+        .page-wrap {
+            width: 1400px;
+            min-height: 810px;
+            margin: 16px auto;
+            background: #edf3fb;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(36, 74, 124, 0.08);
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            grid-template-rows: 86px auto;
+            transition: grid-template-columns 0.3s ease;
+        }
 
-                    <a href="{{ route('employe.temps-travail.index') }}"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/90">
-                        <span class="text-[16px]">🗂️</span>
-                        <span>Temps de travail</span>
-                    </a>
+        .page-wrap.sidebar-collapsed {
+            grid-template-columns: 78px 1fr;
+        }
 
-                    <div class="pt-1">
-                        <div class="flex items-center justify-between px-4 py-3 rounded-lg hover:bg-white/10 text-white/90">
-                            <div class="flex items-center gap-3">
-                                <span class="text-[16px]">📁</span>
-                                <span>Demande</span>
-                            </div>
-                            <span class="text-sm">⌄</span>
+
+        .sidebar-top {
+            background:  white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            border-right: 1px solid #d7e2ef;
+            border-bottom: 1px solid #d7e2ef;
+            overflow: hidden;
+        }
+
+        .company-logo {
+            width: 100%;
+            height: 74px;
+            object-fit: contain;
+            display: block;
+            padding: 6px 10px;
+            background: transparent;
+            border-radius: 12px;
+        }
+
+        .topbar {
+            background: white;
+            color: #3b5b86;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px 0 30px;
+            border-bottom: 1px solid #dbe5f2;
+        }
+
+        .welcome-title {
+            font-size: 22px;
+            font-weight: normal;
+        }
+
+        .top-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .top-user img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #d9e4f1;
+        }
+
+        .top-user-info .name {
+            font-size: 14px;
+            line-height: 1.1;
+        }
+
+        .top-user-info .role {
+            font-size: 12px;
+            margin-top: 4px;
+            color: #6d84a3;
+        }
+
+        .top-user-dropdown {
+            position: relative;
+        }
+
+        .top-user-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #3b5b86;
+        }
+
+        .top-user-btn img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #d9e4f1;
+        }
+
+        .top-user-arrow {
+            font-size: 18px;
+            color: #35527c;
+        }
+
+        .top-user-menu {
+            position: absolute;
+            top: 62px;
+            right: 0;
+            min-width: 170px;
+            background: white;
+            border: 1px solid #dbe5f2;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(36, 74, 124, 0.12);
+            display: none;
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        .top-user-menu.show {
+            display: block;
+        }
+
+        .top-user-menu a,
+        .top-user-menu button {
+            width: 100%;
+            display: block;
+            padding: 12px 14px;
+            text-align: left;
+            background: transparent;
+            border: none;
+            text-decoration: none;
+            color: #35527c;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .top-user-menu a:hover,
+        .top-user-menu button:hover {
+            background: #eef4fc;
+        }
+
+        .sidebar {
+            background: #edf3fb;
+            border-right: 1px solid #d7e2ef;
+            padding: 10px 14px 16px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .sidebar-controls {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 4px 4px 12px;
+        }
+
+        .sidebar-toggle {
+            width: 38px;
+            height: 38px;
+            border: none;
+            background: transparent;
+            color: #35527c;
+            cursor: pointer;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-toggle:hover {
+            background: #e4edf8;
+        }
+
+        .sidebar-toggle svg {
+            width: 22px;
+            height: 22px;
+            stroke: currentColor;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .menu a,
+        .menu button.logout-btn {
+            text-decoration: none;
+            color: #35527c;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: normal;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .menu a:hover,
+        .menu button.logout-btn:hover {
+            background: linear-gradient(180deg, #72aaf7 0%, #5b98ee 100%);
+            color: white;
+        }
+
+        .menu a.active {
+            background: linear-gradient(180deg, #72aaf7 0%, #5b98ee 100%);
+            color: white;
+        }
+
+        .menu-icon {
+            width: 18px;
+            min-width: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .menu-text {
+            transition: opacity 0.2s ease;
+        }
+
+        .menu-separator {
+            height: 1px;
+            background: #d9e3f1;
+            margin: 10px 0;
+        }
+
+        .menu-dropdown {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .menu-dropdown-toggle {
+            text-decoration: none;
+            color: #35527c;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: normal;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .menu-dropdown-toggle:hover {
+            background: linear-gradient(180deg, #72aaf7 0%, #5b98ee 100%);
+            color: white;
+        }
+
+        .menu-arrow {
+            margin-left: auto;
+            font-size: 14px;
+        }
+
+        .menu-submenu {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            margin-left: 34px;
+        }
+
+        .menu-dropdown.open .menu-submenu {
+            display: flex;
+        }
+
+        .menu-submenu a {
+            padding: 10px 14px;
+            font-size: 14px;
+            border-radius: 8px;
+        }
+
+        .page-wrap.sidebar-collapsed .menu-arrow,
+        .page-wrap.sidebar-collapsed .menu-submenu {
+            display: none !important;
+        }
+
+        .page-wrap.sidebar-collapsed .sidebar-top {
+            padding: 4px;
+            justify-content: center;
+        }
+
+        .page-wrap.sidebar-collapsed .menu-text {
+            display: none;
+        }
+
+        .page-wrap.sidebar-collapsed .menu a,
+        .page-wrap.sidebar-collapsed .menu button.logout-btn {
+            justify-content: center;
+            padding: 12px 8px;
+            gap: 0;
+        }
+
+        .page-wrap.sidebar-collapsed .menu-icon {
+            margin: 0;
+        }
+
+        .page-wrap.sidebar-collapsed .company-logo {
+            width: 54px;
+            height: 54px;
+            padding: 2px;
+            object-fit: cover;
+            border-radius: 50px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .page-wrap.sidebar-collapsed .sidebar-controls {
+            justify-content: center;
+            padding-bottom: 10px;
+        }
+
+        .content {
+            background: #edf3fb;
+            padding: 16px;
+            overflow: visible;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.65fr 1fr;
+            gap: 12px;
+            min-height: 100%;
+        }
+
+        .left-column,
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: auto;
+        }
+
+        .card {
+            background: #f9fbff;
+            border: 1px solid #dae5f2;
+            border-radius: 14px;
+            box-shadow: 0 3px 10px rgba(29, 67, 112, 0.05);
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: normal;
+            color: #35527c;
+            padding: 14px 16px 10px;
+        }
+
+        .card-divider {
+            height: 1px;
+            background: #e4edf8;
+            margin: 0 16px;
+        }
+
+        .day-state {
+            padding: 18px 18px 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 12px;
+            min-height: 255px;
+        }
+
+        .day-hours p {
+            font-size: 14px;
+            color: #49658b;
+            margin-bottom: 16px;
+        }
+
+        .day-hours strong {
+            font-size: 16px;
+            color: #35527c;
+            font-weight: normal;
+        }
+
+        .action-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 56px;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: normal;
+            margin-top: 12px;
+        }
+
+        .btn-arrivee {
+            background: linear-gradient(180deg, #41c66e 0%, #2db15a 100%);
+        }
+
+        .btn-depart {
+            background: linear-gradient(180deg, #ff8a1d 0%, #f06f0d 100%);
+        }
+
+        .map-box {
+            width: 100%;
+            height: 210px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e1ebf7;
+        }
+
+        .mini-card-body {
+            padding: 10px 16px 12px;
+        }
+
+        .resume-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #49658b;
+            padding: 8px 0;
+        }
+
+        .resume-row strong {
+            color: #35527c;
+            font-size: 16px;
+            font-weight: normal;
+        }
+
+        .list-body {
+            padding: 8px 14px 10px;
+        }
+
+        .waiting-card {
+            background: #f9fbff;
+            border: 1px solid #dae5f2;
+            border-radius: 14px;
+            box-shadow: 0 3px 10px rgba(29, 67, 112, 0.05);
+            min-height: 230px;
+        }
+
+        .waiting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 4px;
+            border-bottom: 1px solid #e4edf8;
+            color: #49658b;
+            font-size: 14px;
+        }
+
+        .waiting-row:last-child {
+            border-bottom: none;
+        }
+
+        .waiting-row strong {
+            color: #35527c;
+            font-size: 16px;
+            font-weight: normal;
+        }
+
+        .history-card {
+            min-height: 210px;
+        }
+
+        .history-list {
+            padding: 10px 12px 16px;
+        }
+
+        .history-item {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr auto;
+            align-items: center;
+            background: #f2f6fd;
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #49658b;
+        }
+
+        .history-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .history-item strong {
+            color: #35527c;
+            font-weight: normal;
+        }
+
+        .status-present {
+            color: #30a84f;
+        }
+
+        .status-absent {
+            color: #f07b17;
+        }
+
+        .stats-card {
+            min-height: 220px;
+            margin-top: 0;
+        }
+
+        .stats-card-body {
+            padding: 10px 12px 12px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .mini-stat-box {
+            border: 1px solid #e2eaf5;
+            border-radius: 8px;
+            background: white;
+            padding: 8px;
+            min-height: 170px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mini-stat-title {
+            text-align: center;
+            font-size: 11px;
+            color: #56708f;
+            margin-bottom: 8px;
+            font-weight: normal;
+        }
+
+        .real-chart {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 6px;
+            padding: 8px 4px 0;
+        }
+
+            .chart-item {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 4px;
+            }
+
+            .chart-value {
+                font-size: 9px;
+                color: #56708f;
+            }
+
+            .chart-bar {
+                width: 18px;
+                border-radius: 4px 4px 0 0;
+                background: linear-gradient(180deg, #68a4ff 0%, #2f73e6 100%);
+            }
+
+            .chart-label {
+                font-size: 9px;
+                color: #6f86a4;
+            }
+
+            .real-calendar {
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 4px;
+                margin-top: 4px;
+            }
+
+            .calendar-header {
+                text-align: center;
+                font-size: 9px;
+                color: #6f86a4;
+                padding: 2px 0;
+            }
+
+            .calendar-day {
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 9px;
+                border-radius: 4px;
+                color: #35527c;
+                background: #f4f7fc;
+            }
+
+            .calendar-day.empty {
+                background: transparent;
+            }
+
+            .calendar-day.today {
+                background: #5b98ee;
+                color: white;
+            }
+
+            .calendar-day.worked-day {
+                background: #d8ecff;
+                color: #2f73e6;
+                font-weight: bold;
+            }
+
+            .calendar-day.today.worked-day {
+                background: #5b98ee;
+                color: white;
+            }
+
+            .calendar-footer {
+                margin-top: 8px;
+                text-align: center;
+                font-size: 9px;
+                color: #56708f;
+            }
+
+        @media (max-width: 1450px) {
+            .page-wrap {
+                width: calc(100vw - 20px);
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+
+<script>
+    function toggleSidebar() {
+        document.getElementById('pageWrap').classList.toggle('sidebar-collapsed');
+    }
+
+    function toggleDemandesMenu() {
+        if (document.getElementById('pageWrap').classList.contains('sidebar-collapsed')) {
+            return;
+        }
+
+        document.querySelector('.menu-dropdown').classList.toggle('open');
+    }
+</script>
+    <body>
+        <div class="page-wrap" id="pageWrap">
+            <div class="sidebar-top">
+                <img src="{{ asset('Images/drwintech-logo.jpeg') }}" alt="DrwinTech" class="company-logo">
+            </div>
+
+            <div class="topbar">
+                <div class="welcome-title">Bienvenue, {{ $employe?->prenom ?? 'Jean' }} {{ $employe?->nom ?? 'Dupont' }}!</div>
+
+                <div class="top-user-dropdown" id="topUserDropdown">
+                    <button type="button" class="top-user-btn" onclick="toggleUserMenu()">
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode(($employe?->prenom ?? 'Jean').' '.($employe?->nom ?? 'Dupont')) }}&background=ffffff&color=2d6fe0&size=120" alt="Profil">
+
+                        <div class="top-user-info">
+                            <div class="name">{{ $employe?->prenom ?? 'Jean' }} {{ $employe?->nom ?? 'Dupont' }}</div>
+                            <div class="role">{{ $employe?->poste ?? 'Développeur' }}</div>
                         </div>
 
-                        <div class="ml-6 mt-1 space-y-1 border-l border-white/10 pl-4">
-                            <a href="{{ route('employe.demandes.conges.index') }}"
-                               class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 text-white/80 text-[14px]">
-                                <span>⊙</span>
-                                <span>Congé</span>
-                            </a>
+                        <span class="top-user-arrow">▾</span>
+                    </button>
 
-                            <a href="{{ route('employe.demandes.permissions.index') }}"
-                               class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 text-white/80 text-[14px]">
-                                <span>⬒</span>
-                                <span>Permission</span>
-                            </a>
-                        </div>
+                    <div class="top-user-menu" id="topUserMenu">
+                        <a href="{{ route('profile.edit') }}">Profil</a>
+
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit">Déconnexion</button>
+                        </form>
                     </div>
-
-                    <a href="{{ route('profile.edit') }}"
-                       class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white/90">
-                        <span class="text-[16px]">👤</span>
-                        <span>Profil</span>
-                    </a>
-                </nav>
-
-                <div class="px-4 pb-5">
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit"
-                                class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/10 text-white font-semibold text-[15px]">
-                            <span class="text-[16px]">⎋</span>
-                            <span>Déconnexion</span>
-                        </button>
-                    </form>
                 </div>
+            </div>
+
+            <aside class="sidebar">
+                <div class="sidebar-controls">
+                    <button type="button" class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Ouvrir ou fermer le menu">
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M4 6H20"></path>
+                            <path d="M4 12H20"></path>
+                            <path d="M4 18H20"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <nav class="menu">
+                    <a href="{{ route('employe.dashboard') }}" class="{{ request()->routeIs('employe.dashboard') ? 'active' : '' }}">
+                        <span class="menu-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M3 10.5L12 3L21 10.5"></path>
+                                <path d="M5 9.5V21H19V9.5"></path>
+                            </svg>
+                        </span>
+                        <span class="menu-text">Tableau de bord</span>
+                    </a>
+
+                    <a href="{{ route('employe.pointage.index') }}" class="{{ request()->routeIs('employe.pointage.*') ? 'active' : '' }}">
+                        <span class="menu-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 21S18 15.5 18 10.5A6 6 0 0 0 6 10.5C6 15.5 12 21 12 21Z"></path>
+                                <path d="M12 13A2.5 2.5 0 1 0 12 8A2.5 2.5 0 0 0 12 13Z"></path>
+                            </svg>
+                        </span>
+                        <span class="menu-text">Pointage</span>
+                    </a>
+
+                    <a href="{{ route('employe.historique.index') }}" class="{{ request()->routeIs('employe.historique.*') ? 'active' : '' }}">
+                        <span class="menu-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 8V12L15 15"></path>
+                                <path d="M3.5 12A8.5 8.5 0 1 0 12 3.5"></path>
+                            </svg>
+                        </span>
+                        <span class="menu-text">Historique</span>
+                    </a>
+
+                    <div class="menu-separator"></div>
+
+                    <a href="{{ route('employe.temps-travail.index') }}" class="{{ request()->routeIs('employe.temps-travail.*') ? 'active' : '' }}">
+                        <span class="menu-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 8V12L15 15"></path>
+                                <circle cx="12" cy="12" r="9"></circle>
+                            </svg>
+                        </span>
+                        <span class="menu-text">Temps de travail</span>
+                    </a>
+
+                    <div class="menu-dropdown {{ request()->routeIs('employe.demandes.conges.*') || request()->routeIs('employe.demandes.permissions.*') ? 'open' : '' }}">
+                            <button type="button" class="menu-dropdown-toggle" onclick="toggleDemandesMenu()">
+                                <span class="menu-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M4 5H20V19H4Z"></path>
+                                        <path d="M8 9H16"></path>
+                                        <path d="M8 13H14"></path>
+                                    </svg>
+                                </span>
+                                <span class="menu-text">Demande</span>
+                                <span class="menu-arrow menu-text">▾</span>
+                            </button>
+
+                            <div class="menu-submenu" id="demandesSubmenu">
+                                <a href="{{ route('employe.demandes.conges.index') }}" class="{{ request()->routeIs('employe.demandes.conges.*') ? 'active' : '' }}">
+                                    <span class="menu-text">Congé</span>
+                                </a>
+
+                                <a href="{{ route('employe.demandes.permissions.index') }}" class="{{ request()->routeIs('employe.demandes.permissions.*') ? 'active' : '' }}">
+                                    <span class="menu-text">Permission</span>
+                                </a>
+                            </div>
+                    </div>
+                
+                </nav>
             </aside>
 
-            <!-- Main -->
-            <main class="flex-1 px-10 py-7 overflow-hidden">
-                <!-- Header -->
-                <div class="flex items-center justify-between mb-6">
-                    <h1 class="text-[24px] font-bold text-[#24364d]">Tableau de bord</h1>
-                    <div class="flex items-center gap-5 text-[22px] text-[#53657a]">
-                        <span>🔔</span>
-                        <span>↻</span>
-                        <span>⚙️</span>
-                    </div>
-                </div>
+            <main class="content">
+                <div class="dashboard-grid">
+                    <div class="left-column">
+                        <div class="card">
+                            <div class="card-title">État de la journée</div>
+                            <div class="card-divider"></div>
 
-                <!-- Top cards -->
-                <div class="grid grid-cols-4 gap-5 mb-5">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 px-6 py-5">
-                        <div class="flex items-center gap-2 text-[#2b4d73] font-semibold text-[14px] mb-4">
-                            <span class="text-green-500 text-[20px]">✅</span>
-                            <span>Pointage du jour</span>
+                            <div class="day-state">
+                                <div class="day-hours">
+                                    <p>Heure d'arrivée : <strong>{{ $presenceDuJour?->heure_arrivee ?? '--:--' }}</strong></p>
+                                    <p>Heure de départ : <strong>{{ $presenceDuJour?->heure_depart ?? '--:--' }}</strong></p>
+
+                                    <a href="{{ route('employe.pointage.index') }}" class="action-link btn-arrivee">
+                                        Pointer l’arrivée
+                                    </a>
+
+                                    <a href="{{ route('employe.pointage.index') }}" class="action-link btn-depart">
+                                        Pointer le départ
+                                    </a>
+                                </div>
+
+                                <div class="map-box">
+                                    <iframe
+                                        width="100%"
+                                        height="100%"
+                                        frameborder="0"
+                                        style="border:0"
+                                        referrerpolicy="no-referrer-when-downgrade"
+                                        src="https://maps.google.com/maps?q=Drwintech,Aibatin2,Cotonou,Benin&z=15&output=embed"
+                                        allowfullscreen>
+                                    </iframe>
+                                </div>
+                            </div>
                         </div>
-                        <p class="text-[21px] leading-tight font-bold text-[#1f2f46]">Pointé à 08:15</p>
-                    </div>
 
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 px-6 py-5">
-                        <div class="flex items-center gap-2 text-[#2b4d73] font-semibold text-[14px] mb-4">
-                            <span class="text-[#3a5f93] text-[20px]">🕒</span>
-                            <span>Heure d'arrivée</span>
-                        </div>
-                        <p class="text-[38px] leading-none font-bold text-[#1f2f46]">08:15</p>
-                    </div>
+                        <div class="card history-card">
+                            <div class="card-title">Historique des pointages</div>
+                            <div class="card-divider"></div>
 
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 px-6 py-5">
-                        <div class="flex items-center gap-2 text-[#2b4d73] font-semibold text-[14px] mb-4">
-                            <span class="text-red-400 text-[20px]">🕒</span>
-                            <span>Heure de départ</span>
-                        </div>
-                        <p class="text-[38px] leading-none font-bold text-[#1f2f46]">17:30</p>
-                    </div>
-
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 px-6 py-5">
-                        <div class="flex items-center gap-2 text-[#2b4d73] font-semibold text-[14px] mb-4">
-                            <span class="text-[#3a5f93] text-[20px]">📅</span>
-                            <span>Temps de travail</span>
-                        </div>
-                        <p class="text-[38px] leading-none font-bold text-[#1f2f46]">8h 15m</p>
-                    </div>
-                </div>
-
-                <!-- Middle -->
-                <div class="grid grid-cols-[1.1fr_0.9fr] gap-5 mb-5">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-                        <h2 class="text-[18px] font-bold text-[#31465f] mb-4">Activité récente</h2>
-
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between border-t pt-4">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-green-500 text-[22px]">🟢</span>
-                                    <div>
-                                        <p class="text-[14px] font-semibold text-[#2a3f58]">Pointage</p>
-                                        <p class="text-[13px] text-slate-500">Arrivée à 08:15</p>
+                            <div class="history-list">
+                                @forelse ($historiqueRecent as $presence)
+                                    <div class="history-item">
+                                        <div><strong>{{ \Carbon\Carbon::parse($presence->date_presence)->format('d/m/Y') }}</strong></div>
+                                        <div><strong>{{ $presence->heure_arrivee ?? '--:--' }} - {{ $presence->heure_depart ?? '--:--' }}</strong></div>
+                                        <div class="{{ $presence->statut_pointage === 'termine' || $presence->statut_pointage === 'present' ? 'status-present' : 'status-absent' }}">
+                                            {{ $presence->statut_pointage === 'termine' || $presence->statut_pointage === 'present' ? 'Présent' : 'Absent' }}
+                                        </div>
                                     </div>
-                                </div>
-                                <span class="text-[13px] text-slate-400">Aujourd’hui</span>
-                            </div>
-
-                            <div class="flex items-center justify-between border-t pt-4">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-red-400 text-[22px]">📛</span>
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <p class="text-[14px] font-semibold text-[#2a3f58]">Demande de congé</p>
-                                        <span class="px-3 py-1 rounded-full bg-yellow-400 text-white text-[12px] font-semibold">
-                                            En attente
-                                        </span>
+                                @empty
+                                    <div class="history-item">
+                                        <div><strong>Aucune donnée</strong></div>
+                                        <div><strong>--:-- - --:--</strong></div>
+                                        <div class="status-absent">Absent</div>
                                     </div>
-                                </div>
-                                <span class="text-[13px] text-slate-400">Hier</span>
+                                @endforelse
                             </div>
-
-                            <div class="flex items-center justify-between border-t pt-4">
-                                <div class="flex items-center gap-3">
-                                    <span class="text-blue-500 text-[22px]">🕘</span>
-                                    <p class="text-[14px] font-semibold text-[#2a3f58]">Pointage</p>
-                                </div>
-                                <span class="text-[13px] text-slate-400">Hier</span>
-                            </div>
-                        </div>
-
-                        <div class="mt-5">
-                            <a href="{{ route('employe.historique.index') }}" class="text-[#2a6fcd] font-semibold text-[14px]">
-                                Voir tout
-                            </a>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-                        <h2 class="text-[18px] font-bold text-[#31465f] mb-4">Mes demandes</h2>
+                    <div class="right-column">
+                        <div class="card">
+                            <div class="card-title">Résumé du temps de travail</div>
+                            <div class="card-divider"></div>
 
-                        <div class="grid grid-cols-3 gap-3 mb-5">
-                            <div class="rounded-2xl bg-[#f5a623] text-white p-4">
-                                <p class="text-[13px] font-semibold leading-tight">Congés<br>en attente</p>
-                                <p class="text-[34px] font-bold text-right mt-2">1</p>
-                            </div>
-
-                            <div class="rounded-2xl bg-[#2f7cf6] text-white p-4">
-                                <p class="text-[13px] font-semibold leading-tight">Permissions<br>en attente</p>
-                                <p class="text-[34px] font-bold text-right mt-2">0</p>
-                            </div>
-
-                            <div class="rounded-2xl bg-[#34c84a] text-white p-4">
-                                <p class="text-[13px] font-semibold leading-tight">Demandes<br>approuvées</p>
-                                <p class="text-[34px] font-bold text-right mt-2">3</p>
+                            <div class="mini-card-body">
+                                <div class="resume-row">
+                                    <span>Cette semaine :</span>
+                                    <strong>{{ $stats['semaine'] }}</strong>
+                                </div>
+                                <div class="resume-row">
+                                    <span>Ce mois :</span>
+                                    <strong>{{ $stats['mois'] }}</strong>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="border-t pt-5 text-center">
-                            <a href="{{ route('employe.demandes.conges.index') }}"
-                               class="inline-block px-8 py-2.5 rounded-xl bg-[#2f7cf6] text-white text-[14px] font-semibold shadow">
-                                Voir mes demandes
-                            </a>
+                        <div class="card waiting-card">
+                            <div class="card-title">Demandes en attente</div>
+                            <div class="card-divider"></div>
+
+                            <div class="list-body">
+                                <div class="waiting-row">
+                                    <div class="left">
+                                        <span>Congés en attente :</span>
+                                    </div>
+                                    <strong>{{ $stats['conges_en_attente'] }}</strong>
+                                </div>
+
+                                <div class="waiting-row">
+                                    <div class="left">
+                                        <span>Permissions en attente :</span>
+                                    </div>
+                                    <strong>{{ $stats['permissions_en_attente'] }}</strong>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Bottom -->
-                <div class="grid grid-cols-2 gap-5">
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-                        <h2 class="text-[18px] font-bold text-[#31465f] mb-4">Temps de travail de la semaine</h2>
+                        <div class="card stats-card">
+                            <div class="card-title">Mes statistiques</div>
+                            <div class="card-divider"></div>
 
-                        <div class="h-[250px] flex items-end justify-between gap-3 px-3 pt-5 border-t">
                             @php
-                                $jours = [
-                                    ['label' => 'Lun', 'height' => 'h-20', 'color' => 'bg-[#3f5f8c]'],
-                                    ['label' => 'Mar', 'height' => 'h-24', 'color' => 'bg-[#4b6e9d]'],
-                                    ['label' => 'Mer', 'height' => 'h-28', 'color' => 'bg-[#5275a7]'],
-                                    ['label' => 'Jeu', 'height' => 'h-32', 'color' => 'bg-[#44b36c]'],
-                                    ['label' => 'Ven', 'height' => 'h-28', 'color' => 'bg-[#5275a7]'],
-                                    ['label' => 'Sam', 'height' => 'h-24', 'color' => 'bg-[#4b6e9d]'],
-                                    ['label' => 'Dim', 'height' => 'h-22', 'color' => 'bg-[#3f5f8c]'],
+                                use Carbon\Carbon;
+
+                                $maintenant = Carbon::now();
+                                $debutMois = $maintenant->copy()->startOfMonth();
+                                $finMois = $maintenant->copy()->endOfMonth();
+
+                                $premierJourSemaine = $debutMois->dayOfWeekIso; // 1=lundi ... 7=dimanche
+                                $casesVidesAvant = $premierJourSemaine - 1;
+                                $nombreJours = $finMois->day;
+
+                                $labelsSemaine = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+                                $moisFrancais = [
+                                    1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
+                                    5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
+                                    9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre'
                                 ];
+
+                                $maxHeures = max($heuresSemaine ?: [1]);
+                                $maxHeures = $maxHeures > 0 ? $maxHeures : 1;
                             @endphp
 
-                            @foreach ($jours as $jour)
-                                <div class="flex flex-col items-center justify-end h-full w-full">
-                                    <div class="w-10 rounded-t-md {{ $jour['height'] }} {{ $jour['color'] }}"></div>
-                                    <span class="mt-2 text-[13px] text-slate-600">{{ $jour['label'] }}</span>
+                            <div class="stats-card-body">
+                                <div class="mini-stat-box">
+                                    <div class="mini-stat-title">Heures de la semaine</div>
+
+                                    <div class="real-chart">
+                                        @foreach ($heuresSemaine as $index => $heure)
+                                            @php
+                                                $hauteur = max(12, ($heure / $maxHeures) * 90);
+                                            @endphp
+                                            <div class="chart-item">
+                                                <div class="chart-value">{{ number_format($heure, 1) }}h</div>
+                                                <div class="chart-bar" style="height: {{ $hauteur }}px;"></div>
+                                                <div class="chart-label">{{ $labelsSemaine[$index] }}</div>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
-                            @endforeach
-                        </div>
-                    </div>
 
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
-                        <h2 class="text-[18px] font-bold text-[#31465f] mb-4">Localisation des pointages</h2>
+                                <div class="mini-stat-box">
+                                    <div class="mini-stat-title">
+                                        {{ $moisFrancais[$maintenant->month] }} {{ $maintenant->year }}
+                                    </div>
 
-                        <div class="border-t pt-4">
-                            <div class="h-[250px] rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center relative">
-                                <img
-                                    src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1200&auto=format&fit=crop"
-                                    alt="Carte"
-                                    class="w-full h-full object-cover opacity-60"
-                                >
-                                <div class="absolute text-6xl">📍</div>
+                                    <div class="real-calendar">
+                                        <div class="calendar-header">L</div>
+                                        <div class="calendar-header">M</div>
+                                        <div class="calendar-header">M</div>
+                                        <div class="calendar-header">J</div>
+                                        <div class="calendar-header">V</div>
+                                        <div class="calendar-header">S</div>
+                                        <div class="calendar-header">D</div>
+
+                                        @for ($i = 1; $i <= $casesVidesAvant; $i++)
+                                            <div class="calendar-day empty"></div>
+                                        @endfor
+
+                                        @for ($jour = 1; $jour <= $nombreJours; $jour++)
+                                            @php
+                                                $dateCourante = Carbon::create($maintenant->year, $maintenant->month, $jour);
+                                                $estAujourdhui = $dateCourante->isToday();
+                                                $estJourTravaille = in_array($jour, $joursTravaillesMois ?? []);
+                                            @endphp
+
+                                            <div class="calendar-day {{ $estAujourdhui ? 'today' : '' }} {{ $estJourTravaille ? 'worked-day' : '' }}">
+                                                {{ $jour }}
+                                            </div>
+                                        @endfor
+                                    </div>
+
+                                    <div class="calendar-footer">
+                                        Aujourd’hui : {{ $maintenant->format('d/m/Y') }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                    
                     </div>
                 </div>
             </main>
         </div>
-    </div>
-</x-app-layout>
+
+            <script>
+                function toggleSidebar() {
+                    document.getElementById('pageWrap').classList.toggle('sidebar-collapsed');
+                }
+
+                function toggleUserMenu() {
+                    document.getElementById('topUserMenu').classList.toggle('show');
+                }
+
+                window.addEventListener('click', function (e) {
+                    const dropdown = document.getElementById('topUserDropdown');
+
+                    if (!dropdown.contains(e.target)) {
+                        document.getElementById('topUserMenu').classList.remove('show');
+                    }
+                });
+            </script>
+    </body>
+</html>

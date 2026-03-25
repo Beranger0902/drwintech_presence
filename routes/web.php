@@ -51,8 +51,8 @@ Route::middleware('auth')->group(function () {
     });
 
     // EMPLOYE
-    Route::prefix('employe')->name('employe.')->middleware('role:employe')->group(function () {
-        Route::view('/dashboard', 'employe.dashboard')->name('dashboard');
+        Route::prefix('employe')->name('employe.')->middleware('role:employe')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Employe\DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/pointage', [PointageController::class, 'index'])->name('pointage.index');
         Route::post('/pointage/arrivee', [PointageController::class, 'pointerArrivee'])->name('pointage.arrivee');
