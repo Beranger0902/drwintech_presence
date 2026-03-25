@@ -55,6 +55,8 @@ Route::middleware('auth')->group(function () {
         Route::view('/dashboard', 'employe.dashboard')->name('dashboard');
 
         Route::get('/pointage', [PointageController::class, 'index'])->name('pointage.index');
+        Route::post('/pointage/arrivee', [PointageController::class, 'pointerArrivee'])->name('pointage.arrivee');
+        Route::post('/pointage/depart', [PointageController::class, 'pointerDepart'])->name('pointage.depart');
         Route::get('/historique', [HistoriqueController::class, 'index'])->name('historique.index');
         Route::get('/temps-travail', [EmployeTempsTravailController::class, 'index'])->name('temps-travail.index');
 

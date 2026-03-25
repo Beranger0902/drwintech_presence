@@ -13,7 +13,7 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    public const ROLE_ADMIN = 'adminstrateur';
+    public const ROLE_ADMIN = 'administrateur';
     public const ROLE_AGENT = 'agent_accueil';
     public const ROLE_EMPLOYE = 'employe';
     /**
@@ -59,5 +59,10 @@ class User extends Authenticatable
     }
     public function isEmplye(): boll {
         return $this->role === self::ROLE_EMPLOYE;
+    }
+
+    public function employe()
+    {
+        return $this->hasOne(Employe::class);
     }
 }
