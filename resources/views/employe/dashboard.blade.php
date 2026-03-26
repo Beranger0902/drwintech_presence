@@ -23,7 +23,8 @@
         }
 
         .page-wrap {
-            width: 1400px;
+            width: 120%;
+            max-width: 1260px;
             min-height: 810px;
             margin: 16px auto;
             background: #edf3fb;
@@ -232,13 +233,8 @@
 
         .menu a:hover,
         .menu button.logout-btn:hover {
-            background: linear-gradient(180deg, #72aaf7 0%, #5b98ee 100%);
-            color: white;
-        }
-
-        .menu a.active {
-            background: linear-gradient(180deg, #72aaf7 0%, #5b98ee 100%);
-            color: white;
+            background: rgba(91, 152, 238, 0.15);
+            color: #35527c;
         }
 
         .menu-icon {
@@ -273,6 +269,7 @@
             gap: 6px;
         }
 
+        .menu a,
         .menu-dropdown-toggle {
             text-decoration: none;
             color: #35527c;
@@ -293,9 +290,25 @@
         }
 
         .menu-dropdown-toggle:hover {
-            background: linear-gradient(180deg, #72aaf7 0%, #5b98ee 100%);
-            color: white;
+           background: rgba(91, 152, 238, 0.15);
+            color: #35527c;
         }
+
+        .menu a.active,
+        .menu-dropdown.open .menu-dropdown-toggle {
+           background: rgba(91, 152, 238, 0.2);
+            color: #35527c;
+        }
+
+        .menu a,
+        .menu-dropdown-toggle {
+            transition: all 0.25s ease;
+        }
+
+        .menu a.active {
+            border-left: 4px solid #5b98ee;
+        }
+
 
         .menu-arrow {
             margin-left: auto;

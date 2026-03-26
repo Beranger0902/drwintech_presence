@@ -11,7 +11,7 @@ use Illuminate\Support\Carbon;
 
 class PointageController extends Controller
 {
-    
+    //Chargement des données de l'employé depuis la base de donnée pour pouvoir l'afficher au niveau du profil
     public function index(Request $request)
     {
         $employe = $request->user()->employe;
@@ -19,12 +19,12 @@ class PointageController extends Controller
         $presenceDuJour = null;
 
         if ($employe) {
-            $presenceDuJour = Presence::where('employe_id', $employe->id)
+            $presenceDuJour = \App\Models\Presence::where('employe_id', $employe->id)
                 ->whereDate('date_presence', today())
                 ->first();
         }
-
-        return view('employe.pointage.index', compact('presenceDuJour'));
+        // Recupérer les données et envoyer au fichier Views pour l'affichage
+        return view('employe.pointage.index', compact('employe','presenceDuJour'));
     }
 
         private function jsonResponse(bool $success, string $message, array $data = [], int $status = 200)
@@ -50,9 +50,11 @@ class PointageController extends Controller
             if (! $employe) {
                 return $this->jsonResponse(false, 'Aucune fiche employé liée à cet utilisateur.', [], 422);
             }
-
+        // Recupération du longitude et latitude de la position de l'employé
             $latitude = (float) $request->latitude;
             $longitude = (float) $request->longitude;
+
+    // Comparaison des données recupérer par rapport à la zone exiger
 
             if (! $geolocalisationService->positionAutorisee($latitude, $longitude)) {
                 return $this->jsonResponse(false, 'Pointage refusé : vous êtes hors de la zone autorisée.', [], 422);
@@ -68,6 +70,7 @@ class PointageController extends Controller
                 ]
             );
 
+            //Refus de deux pontage dans la même journée
             if ($presence->heure_arrivee) {
                 return $this->jsonResponse(false, 'Votre arrivée a déjà été pointée aujourd’hui.', [], 422);
             }
@@ -88,7 +91,7 @@ class PointageController extends Controller
                 'longitude' => $longitude,
             ]);
         }
-
+        // Pointage de départ de l'employé
         public function pointerDepart(Request $request, GeolocalisationService $geolocalisationService)
     {
         $request->validate([
@@ -140,5 +143,83 @@ class PointageController extends Controller
             'latitude' => $latitude,
             'longitude' => $longitude,
         ]);
+    }
+
+    //L'historique du pointage pourvoir avoir une vue global
+
+    public function historique(Request $request)
+    {
+        $employe = $request->user()->employe;
+
+        if (! $employe) {
+            abort(404, 'Employé introuvable.');
+        }
+
+        $query = \App\Models\Presence::where('employe_id', $employe->id);
+
+        if ($request->filled('date_debut')) {
+            $query->whereDate('date_presence', '>=', $request->date_debut);
+        }
+
+        if ($request->filled('date_fin')) {
+            $query->whereDate('date_presence', '<=', $request->date_fin);
+        }
+
+        if ($request->filled('statut')) {
+            $query->where('statut_pointage', $request->statut);
+        }
+
+        $historiques = $query
+            ->orderByDesc('date_presence')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('employe.historique.index', compact('employe', 'historiques'));
+    }
+
+    //Page du temps de travail
+
+    public function tempsTravail(Request $request)
+    {
+        $employe = $request->user()->employe;
+
+        if (! $employe) {
+            abort(404, 'Employé introuvable.');
+        }
+
+        $presencesSemaine = \App\Models\Presence::where('employe_id', $employe->id)
+            ->whereBetween('date_presence', [now()->startOfWeek(), now()->endOfWeek()])
+            ->orderBy('date_presence')
+            ->get();
+
+        $heuresParJour = [];
+        $joursLabels = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+
+        for ($i = 0; $i < 7; $i++) {
+            $date = now()->startOfWeek()->copy()->addDays($i)->toDateString();
+
+            $presence = $presencesSemaine->firstWhere('date_presence', $date);
+            $minutes = $presence?->duree_minutes ?? 0;
+
+            $heuresParJour[] = round($minutes / 60, 2);
+        }
+
+        $totalMinutesSemaine = $presencesSemaine->sum('duree_minutes');
+        $joursTravailles = $presencesSemaine->filter(fn ($p) => !empty($p->heure_arrivee))->count();
+
+        $minutesNormales = min($totalMinutesSemaine, 40 * 60);
+        $minutesSupp = max($totalMinutesSemaine - (40 * 60), 0);
+
+        $stats = [
+            'heures_semaine' => floor($totalMinutesSemaine / 60) . 'h ' . ($totalMinutesSemaine % 60) . 'min',
+            'heures_supp' => floor($minutesSupp / 60) . 'h ' . ($minutesSupp % 60) . 'min',
+            'jours_travailles' => $joursTravailles . ' jours',
+            'heures_par_jour' => $heuresParJour,
+            'jours_labels' => $joursLabels,
+            'pourcentage_normal' => $totalMinutesSemaine > 0 ? round(($minutesNormales / $totalMinutesSemaine) * 100) : 0,
+            'pourcentage_supp' => $totalMinutesSemaine > 0 ? round(($minutesSupp / $totalMinutesSemaine) * 100) : 0,
+        ];
+
+        return view('employe.temps-travail.index', compact('employe', 'stats'));
     }
 }

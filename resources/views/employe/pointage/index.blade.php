@@ -24,9 +24,10 @@
         }
 
         .page-wrap {
-            width: 1400px;
-            min-height: 860px;
-            margin: 16px auto;
+            width: 120%;
+            max-width: 1260px;
+            min-height: 810px;
+            margin: 20px auto;
             background: #edf3fb;
             border-radius: 20px;
             overflow: hidden;
@@ -42,7 +43,7 @@
         }
 
         .sidebar-top {
-            background: #edf3fb;
+            background: white;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -59,6 +60,7 @@
             display: block;
             padding: 6px 10px;
             background: transparent;
+            border-radius: 12px;
         }
 
         .topbar {
@@ -221,14 +223,23 @@
 
         .menu a:hover,
         .menu-dropdown-toggle:hover {
-            background: linear-gradient(180deg, #72aaf7 0%, #5b98ee 100%);
-            color: white;
+            background: rgba(91, 152, 238, 0.15);
+            color: #35527c;
         }
 
         .menu a.active,
         .menu-dropdown.open .menu-dropdown-toggle {
-            background: linear-gradient(180deg, #72aaf7 0%, #5b98ee 100%);
-            color: white;
+           background: rgba(91, 152, 238, 0.2);
+            color: #35527c;
+        }
+
+        .menu a,
+        .menu-dropdown-toggle {
+            transition: all 0.25s ease;
+        }
+
+        .menu a.active {
+            border-left: 4px solid #5b98ee
         }
 
         .menu-icon {
@@ -320,6 +331,8 @@
         .content {
             background: #edf3fb;
             padding: 18px;
+            width: 100%;
+            max-width: 100%;
         }
 
         .content-header {
@@ -351,7 +364,7 @@
 
         .pointage-grid-top {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 18px;
             margin-bottom: 18px;
         }
@@ -367,9 +380,9 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            color: #1f3f6d;
-            font-size: 16px;
-            font-weight: bold;
+            color: #6d84a3;
+            font-size: 14px;
+            font-weight: normal;
             margin-bottom: 10px;
         }
 
@@ -384,9 +397,9 @@
         .mini-card-value {
             border-top: 1px solid #e6edf7;
             padding-top: 14px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #1f3f6d;
+            font-size: 16px;
+            font-weight: normal;
+            color: #35527c;
         }
 
         .map-card {
@@ -399,6 +412,7 @@
 
         .map-frame {
             width: 100%;
+            max-width: 100%;
             height: 280px;
             border-radius: 10px;
             overflow: hidden;
@@ -425,7 +439,7 @@
 
         .action-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 18px;
             margin-bottom: 18px;
         }
@@ -502,12 +516,12 @@
 
         .info-label {
             color: #5e7798;
-            font-weight: bold;
+            font-weight: normal;
         }
 
         .info-value {
             color: #1f3f6d;
-            font-weight: bold;
+            font-weight: normal;
         }
 
         .status-success {
@@ -713,7 +727,7 @@
             <div class="welcome-title">Pointage</div>
 
             <div class="top-user-dropdown" id="topUserDropdown">
-                <button type="button" class="top-user-btn" id="topUserBtn">
+                <button type="button" class="top-user-btn" onclick="toggleUserMenu()">
                     <img src="https://ui-avatars.com/api/?name={{ urlencode(($employe?->prenom ?? 'Jean').' '.($employe?->nom ?? 'Dupont')) }}&background=ffffff&color=2d6fe0&size=120" alt="Profil">
 
                     <div class="top-user-info">
@@ -817,7 +831,6 @@
 
         <main class="content">
             <div class="content-header">
-                <h1>Pointage</h1>
                 <div class="breadcrumb">
                     <a href="{{ route('employe.dashboard') }}">Accueil</a>
                     &nbsp; / &nbsp;
@@ -920,7 +933,7 @@
 
                 <div class="info-row">
                     <div class="info-label">Adresse :</div>
-                    <div class="info-value">Cotonou, Bénin</div>
+                    <div class="info-value">Aibatin,Cotonou, Bénin</div>
                 </div>
             </div>
         </main>
@@ -1061,7 +1074,7 @@
         }
 
         function updateMaps(lat, lng) {
-            const url = `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`;
+            const url = `https://maps.google.com/maps?q=Drwintech,Aibatin2,Cotonou,Benin,${lat},${lng}&z=16&output=embed`;
 
             if (mainMap) mainMap.src = url;
             if (verificationMap) verificationMap.src = url;

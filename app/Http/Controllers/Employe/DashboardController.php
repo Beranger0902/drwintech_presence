@@ -13,14 +13,14 @@ class DashboardController extends Controller
     {
         $employe = $request->user()->employe;
 
-        $jourTravaillesMois = [];
+        $joursTravaillesMois = [];
 
         $presenceDuJour = null;
         $historiqueRecent = collect();
         $heuresSemaine = [0, 0, 0, 0, 0, 0, 0];
         $totalSemaineMinutes = 0;
         $totalMoisMinutes = 0;
-        $jourTravaillesMois = [];
+        $joursTravaillesMois = [];
 
         if ($employe) {
             $presenceDuJour = Presence::where('employe_id', $employe->id)
