@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Employe;
 
 use App\Http\Controllers\Controller;
 use App\Models\Presence;
+use App\Models\Demande;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -64,11 +65,21 @@ class DashboardController extends Controller
                 ->toArray();
         }
 
+        $congesEnAttente = Demande::where('employe_id', $employe->id)
+            ->where('type_demande', 'conge')
+            ->where('statut', 'en_attente')
+            ->count();
+
+        $permissionsEnAttente = Demande::where('employe_id', $employe->id)
+            ->where('type_demande', 'permission')
+            ->where('statut', 'en_attente')
+            ->count();
+
         $stats = [
             'semaine' => $this->formatMinutes($totalSemaineMinutes),
             'mois' => $this->formatMinutes($totalMoisMinutes),
-            'conges_en_attente' => 0,
-            'permissions_en_attente' => 0,
+            'conges_en_attente' => $congesEnAttente,
+            'permissions_en_attente' => $permissionsEnAttente,
         ];
 
         return view('employe.dashboard', compact(

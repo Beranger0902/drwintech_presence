@@ -1,77 +1,16 @@
+<div>
+    <!-- Well begun is half done. - Aristotle -->
+</div>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Temps de travail</title>
+    <title>Demandes de congé</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-            const barCtx = document.getElementById('barChart');
-            const pieCtx = document.getElementById('pieChart');
-
-            if (barCtx) {
-                new Chart(barCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: @json($stats['jours_labels']),
-                        datasets: [{
-                            label: 'Heures',
-                            data: @json($stats['heures_par_jour']),
-                            backgroundColor: 'rgba(47, 125, 225, 0.85)',
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
-            }
-
-            if (pieCtx) {
-                new Chart(pieCtx, {
-                    type: 'pie',
-                    data: {
-                        labels: ['Temps normal', 'Heures supplémentaires'],
-                        datasets: [{
-                            data: [
-                                {{ $stats['pourcentage_normal'] }},
-                                {{ $stats['pourcentage_supp'] }}
-                            ],
-                            backgroundColor: [
-                                'rgba(47, 125, 225, 0.9)',
-                                'rgba(243, 154, 47, 0.9)'
-                            ]
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false
-                    }
-                });
-            }
-        });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: Arial, sans-serif;
@@ -97,16 +36,13 @@
             transition: grid-template-columns 0.3s ease;
         }
 
-        .page-wrap.sidebar-collapsed {
-            grid-template-columns: 78px 1fr;
-        }
+        .page-wrap.sidebar-collapsed { grid-template-columns: 78px 1fr; }
 
         .sidebar-top {
             background: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0;
             border-right: 1px solid #d7e2ef;
             border-bottom: 1px solid #d7e2ef;
             overflow: hidden;
@@ -132,14 +68,9 @@
             border-bottom: 1px solid #dbe5f2;
         }
 
-        .welcome-title {
-            font-size: 22px;
-            font-weight: normal;
-        }
+        .welcome-title { font-size: 22px; font-weight: normal; }
 
-        .top-user-dropdown {
-            position: relative;
-        }
+        .top-user-dropdown { position: relative; }
 
         .top-user-btn {
             display: flex;
@@ -172,10 +103,7 @@
             text-align: left;
         }
 
-        .top-user-arrow {
-            font-size: 18px;
-            color: #35527c;
-        }
+        .top-user-arrow { font-size: 18px; color: #35527c; }
 
         .top-user-menu {
             position: absolute;
@@ -191,9 +119,7 @@
             z-index: 1000;
         }
 
-        .top-user-menu.show {
-            display: block;
-        }
+        .top-user-menu.show { display: block; }
 
         .top-user-menu a,
         .top-user-menu button {
@@ -210,9 +136,7 @@
         }
 
         .top-user-menu a:hover,
-        .top-user-menu button:hover {
-            background: #eef4fc;
-        }
+        .top-user-menu button:hover { background: #eef4fc; }
 
         .sidebar {
             background: #edf3fb;
@@ -242,9 +166,7 @@
             justify-content: center;
         }
 
-        .sidebar-toggle:hover {
-            background: #e4edf8;
-        }
+        .sidebar-toggle:hover { background: #e4edf8; }
 
         .sidebar-toggle svg {
             width: 22px;
@@ -292,9 +214,7 @@
             color: #35527c;
         }
 
-        .menu a.active {
-            border-left: 4px solid #5b98ee;
-        }
+        .menu a.active { border-left: 4px solid #5b98ee; }
 
         .menu-icon {
             width: 18px;
@@ -312,9 +232,7 @@
             fill: none;
         }
 
-        .menu-text {
-            transition: opacity 0.2s ease;
-        }
+        .menu-text { transition: opacity 0.2s ease; }
 
         .menu-separator {
             height: 1px;
@@ -340,9 +258,7 @@
             margin-left: 34px;
         }
 
-        .menu-dropdown.open .menu-submenu {
-            display: flex;
-        }
+        .menu-dropdown.open .menu-submenu { display: flex; }
 
         .menu-submenu a {
             padding: 10px 14px;
@@ -396,6 +312,10 @@
         .page-title-row {
             padding: 18px 22px;
             border-bottom: 1px solid #e3ebf5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
         }
 
         .page-title-row h1 {
@@ -404,6 +324,19 @@
             color: #1f3f6d;
             margin: 0;
         }
+
+        .add-btn {
+            border: none;
+            background: #2f7de1;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .add-btn:hover { background: #256dcb; }
 
         .page-breadcrumb-row {
             padding: 14px 22px;
@@ -419,236 +352,191 @@
             color: #7b8da8;
         }
 
-        .page-breadcrumb-row .active-breadcrumb {
-            color: #4f6f97;
-        }
+        .page-breadcrumb-row .active-breadcrumb { color: #4f6f97; }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 18px;
-            margin-bottom: 18px;
-        }
-
-        .stat-card {
-            background: white;
-            border: 1px solid #dbe5f2;
-            border-radius: 14px;
-            padding: 18px 20px;
-        }
-
-        .stat-head {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #35527c;
-            font-size: 15px;
-            margin-bottom: 12px;
-        }
-
-        .stat-head svg {
-            width: 22px;
-            height: 22px;
-            stroke: currentColor;
-            stroke-width: 2;
-            fill: none;
-        }
-
-        .stat-value {
-            font-size: 18px;
-            color: #1f3f6d;
-            font-weight: bold;
-        }
-
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 18px;
-        }
-
-        .chart-card {
+        .table-card {
             background: white;
             border: 1px solid #dbe5f2;
             border-radius: 14px;
             padding: 18px;
         }
 
-        .chart-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #1f3f6d;
-            margin-bottom: 16px;
+        .table-wrapper { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
         }
 
-        .bar-chart {
-            height: 320px;
-            display: flex;
-            align-items: end;
-            justify-content: space-between;
-            gap: 12px;
-            padding: 12px 8px 0;
-            border-left: 1px solid #d9e4f2;
+        thead th {
+            background: #eef3fb;
+            color: #35527c;
+            font-size: 15px;
+            font-weight: bold;
+            padding: 14px 12px;
+            text-align: left;
             border-bottom: 1px solid #d9e4f2;
         }
 
-        .bar-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: end;
-            gap: 8px;
+        tbody td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #e8eef7;
+            font-size: 14px;
+            color: #35527c;
         }
 
-        .bar-value {
-            font-size: 11px;
-            color: #6f86a4;
-        }
+        tbody tr:nth-child(even) { background: #fafcff; }
 
-        .bar {
-            width: 42px;
-            background: linear-gradient(180deg, #5fa0f3 0%, #2f7de1 100%);
-            border-radius: 6px 6px 0 0;
-        }
-
-        .bar-label {
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 7px;
             font-size: 13px;
-            color: #35527c;
+            font-weight: bold;
+            color: white;
         }
 
-        .pie-wrap {
+        .badge-attente { background: #f0b429; color: #3a2d00; }
+        .badge-approuve { background: #24b36b; }
+        .badge-refuse { background: #e05a47; }
+
+        .action-link {
+            color: #2f7de1;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .pagination-wrapper {
+            margin-top: 18px;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            min-height: 320px;
         }
 
-        .pie-chart {
-            width: 250px;
-            height: 250px;
-            border-radius: 50%;
-            background: conic-gradient(
-                #2f7de1 0deg calc(var(--normal) * 3.6deg),
-                #f39a2f calc(var(--normal) * 3.6deg) 360deg
-            );
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .pie-chart::after {
-            content: "";
-            position: absolute;
-            inset: 55px;
-            background: white;
-            border-radius: 50%;
-        }
-
-        .pie-center {
-            position: absolute;
+        .modal-overlay {
+            position: fixed;
             inset: 0;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
+            background: rgba(28, 65, 120, 0.45);
+            display: none;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            color: #1f3f6d;
-            font-size: 14px;
+            z-index: 3000;
+            padding: 12px;
         }
 
-        .pie-center strong {
-            font-size: 28px;
-        }
+        .modal-overlay.show { display: flex; }
 
-        .legend {
-            display: flex;
-            gap: 18px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            color: #35527c;
-        }
-
-        .legend-color {
-            width: 14px;
-            height: 14px;
-            border-radius: 3px;
-        }
-
-        .legend-blue {
-            background: #2f7de1;
-        }
-
-        .legend-orange {
-            background: #f39a2f;
-        }
-
-        .filter-card {
+        .modal-box {
+            width: 100%;
+            max-width: 560px;
             background: white;
-            border: 1px solid #dbe5f2;
-            border-radius: 14px;
-            padding: 18px;
-            margin-bottom: 18px;
+            border-radius: 16px;
+            box-shadow: 0 18px 50px rgba(0,0,0,0.18);
+            overflow: hidden;
         }
 
-        .filter-form {
+        .modal-header {
+            padding: 14px 18px;
+            border-bottom: 1px solid #e6edf7;
             display: flex;
-            gap: 16px;
-            align-items: end;
-            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-body {
+            padding: 18px;
+        }
+        .modal-header h2 {
+            font-size: 22px;
+            color: #1f3f6d;
+            margin: 0;
+        }
+
+        .close-modal-btn {
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            color: #6d84a3;
+            cursor: pointer;
+        }
+
+        .modal-body { padding: 22px; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
             gap: 8px;
+            margin-bottom: 12px;
         }
+
+        .form-group.full { grid-column: 1 / -1; }
 
         .form-group label {
             font-size: 14px;
             color: #35527c;
         }
 
-        .form-group select {
-            height: 44px;
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             border: 1px solid #cfdcec;
             border-radius: 8px;
-            padding: 0 12px;
+            padding: 10px 12px;
             font-size: 14px;
             color: #35527c;
             outline: none;
             background: white;
-            min-width: 180px;
         }
 
-        .filter-btn {
-            height: 44px;
+        .form-group input,
+        .form-group select {
+            height: 42px;
+        }
+        .form-group textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .submit-btn {
             border: none;
-            border-radius: 8px;
-            background: #2f7de1;
+            background: #2fa13b;
             color: white;
-            font-size: 15px;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
-            padding: 0 18px;
+            width: 220px;
         }
 
-        .filter-btn:hover {
-            background: #246dca;
+        .submit-btn:hover { background: #278832; }
+
+        .success-message {
+            background: #e9f9ef;
+            border: 1px solid #b9ebc8;
+            color: #208a4a;
+            padding: 12px 14px;
+            border-radius: 8px;
+            margin-bottom: 16px;
         }
 
-        @media (max-width: 1100px) {
-            .stats-grid,
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
+        .error-list {
+            background: #fff1f0;
+            border: 1px solid #f1b9b4;
+            color: #c0392b;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 900px) {
+            .form-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -735,8 +623,8 @@
                     <span class="menu-text">Temps de travail</span>
                 </a>
 
-                <div class="menu-dropdown {{ request()->routeIs('employe.demandes.conges.') || request()->routeIs('employe.demandes.permissions.') ? 'open' : '' }}" id="menuDropdownDemandes">
-                    <button type="button" class="menu-dropdown-toggle" id="demandesToggle">
+                <div class="menu-dropdown open" id="menuDropdownDemandes">
+                    <button type="button" class="menu-dropdown-toggle active" id="demandesToggle">
                         <span class="menu-icon">
                             <svg viewBox="0 0 24 24">
                                 <path d="M4 5H20V19H4Z"></path>
@@ -749,11 +637,11 @@
                     </button>
 
                     <div class="menu-submenu">
-                        <a href="{{ route('employe.demandes.conges.index') }}" class="{{ request()->routeIs('employe.demandes.conges.*') ? 'active' : '' }}">
+                        <a href="{{ route('employe.demandes.conges.index') }}" class="active">
                             <span class="menu-text">Congé</span>
                         </a>
 
-                        <a href="{{ route('employe.demandes.permissions.index') }}" class="{{ request()->routeIs('employe.demandes.permissions.*') ? 'active' : '' }}">
+                        <a href="{{ route('employe.demandes.permissions.index') }}">
                             <span class="menu-text">Permission</span>
                         </a>
                     </div>
@@ -764,94 +652,141 @@
         <main class="content">
             <div class="content-page-header">
                 <div class="page-title-row">
-                    <h1>Temps de travail</h1>
+                    <h1>Mes demandes de congé</h1>
+                    <button type="button" class="add-btn" id="openCongeModal">Faire une demande</button>
                 </div>
 
                 <div class="page-breadcrumb-row">
                     <a href="{{ route('employe.dashboard') }}">Accueil</a>
                     <span>/</span>
-                    <a href="{{ route('employe.temps-travail.index') }}" class="active-breadcrumb">Temps de travail</a>
+                    <a href="{{ route('employe.demandes.conges.index') }}" class="active-breadcrumb">Congé</a>
                 </div>
             </div>
 
-            <div class="filter-card">
-                <form method="GET" action="{{ route('employe.temps-travail.index') }}" class="filter-form">
-                    <div class="form-group">
-                        <label for="periode">Période</label>
-                        <select name="periode" id="periode">
-                            <option value="semaine" {{ request('periode', 'semaine') === 'semaine' ? 'selected' : '' }}>Semaine</option>
-                            <option value="mois" {{ request('periode') === 'mois' ? 'selected' : '' }}>Mois</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>&nbsp;</label>
-                        <button type="submit" class="filter-btn">Appliquer</button>
-                    </div>
-                </form>
-            </div>
-  
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-head">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 8V12L15 15"></path>
-                            <circle cx="12" cy="12" r="9"></circle>
-                        </svg>
-                        <span>{{ $stats['periode'] === 'mois' ? 'Heures du mois' : 'Heures de la semaine' }}</span>
-                    </div>
-                    <div class="stat-value">{{ $stats['heures_periode'] }}</div>
+            @if (session('success'))
+                <div class="success-message">
+                    {{ session('success') }}
                 </div>
+            @endif
 
-                <div class="stat-card">
-                    <div class="stat-head">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 8V12L15 15"></path>
-                            <circle cx="12" cy="12" r="9"></circle>
-                        </svg>
-                        <span>Heures supplémentaires</span>
-                    </div>
-                    <div class="stat-value">{{ $stats['heures_supp'] }}</div>
+            @if ($errors->any())
+                <div class="error-list">
+                    <ul style="margin:0; padding-left:18px;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
+            @endif
 
-                <div class="stat-card">
-                    <div class="stat-head">
-                        <svg viewBox="0 0 24 24">
-                            <rect x="3" y="5" width="18" height="16"></rect>
-                            <path d="M8 3V7"></path>
-                            <path d="M16 3V7"></path>
-                            <path d="M3 10H21"></path>
-                        </svg>
-                        <span>Heures du mois</span>
-                    </div>
-                    <div class="stat-value">{{ $stats['heures_mois'] }}</div>
+            <div class="table-card">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Type de congé</th>
+                                <th>Période</th>
+                                <th>Jours</th>
+                                <th>Statut</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($demandesConge as $demande)
+                                <tr>
+                                    <td>{{ $demande->conge?->type_conge ?? '-' }}</td>
+                                    <td>
+                                        {{ optional($demande->conge?->date_debut)->format('d/m/Y') ?? '-' }}
+                                        -
+                                        {{ optional($demande->conge?->date_fin)->format('d/m/Y') ?? '-' }}
+                                    </td>
+                                    <td>{{ $demande->conge?->nombre_jours ?? '-' }}</td>
+                                    <td>
+                                        @php
+                                            $statut = strtolower($demande->statut);
+                                        @endphp
+
+                                        <span class="badge
+                                            {{ $statut === 'en_attente' ? 'badge-attente' : '' }}
+                                            {{ $statut === 'approuve' ? 'badge-approuve' : '' }}
+                                            {{ $statut === 'refuse' ? 'badge-refuse' : '' }}">
+                                            {{ str_replace('_', ' ', ucfirst($statut)) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if ($demande->conge && $demande->conge->piece_jointe)
+                                            <a class="action-link" href="{{ asset('storage/' . $demande->conge->piece_jointe) }}" target="_blank">Voir</a>
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" style="text-align:center;">Aucune demande de congé.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-           
-            <div class="charts-grid">
-
-                    <div class="chart-card">
-                        <div class="chart-title">{{ $stats['titre_graphique'] }}</div>
-                        <div style="height: 320px;">
-                            <canvas id="barChart"></canvas>
-                        </div>
-                    </div>
-
-
-                    <div class="chart-card">
-                        <div class="chart-title">Répartition du temps de travail</div>
-                        <div style="height: 320px;">
-                            <canvas id="pieChart"></canvas>
-                        </div>
-                    </div>
-                
+            <div class="pagination-wrapper">
+                    {{ $demandesConge->links() }}
                 </div>
             </div>
         </main>
     </div>
 
-<script>
-        document.addEventListener('DOMContentLoaded', function () {
+    <div class="modal-overlay {{ $errors->any() ? 'show' : '' }}" id="congeModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Nouvelle demande de congé</h2>
+                <button type="button" class="close-modal-btn" id="closeCongeModal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <form method="POST" action="{{ route('employe.demandes.conges.store') }}" enctype="multipart/form-data">
+                    @csrf
+
+                    <div class="form-group">
+                        <label for="type_conge">Type de congé</label>
+                        <select name="type_conge" id="type_conge" required>
+                            <option value="">Sélectionner le type </option>
+                            <option value="Congé annuel" {{ old('type_conge') === 'Congé annuel' ? 'selected' : '' }}>Congé annuel</option>
+                            <option value="Congé maladie" {{ old('type_conge') === 'Congé maladie' ? 'selected' : '' }}>Congé maladie</option>
+                            <option value="Congé sans solde" {{ old('type_conge') === 'Congé sans solde' ? 'selected' : '' }}>Congé sans solde</option>
+                        </select>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="date_debut">Date de début</label>
+                            <input type="date" name="date_debut" id="date_debut" value="{{ old('date_debut') }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date_fin">Date de fin</label>
+                            <input type="date" name="date_fin" id="date_fin" value="{{ old('date_fin') }}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group full">
+                        <label for="observation">Commentaire</label>
+                        <textarea name="observation" id="observation" placeholder="Ajouter un commentaire...">{{ old('observation') }}</textarea>
+                    </div>
+
+                    <div class="form-group full">
+                        <label for="piece_jointe">Pièce jointe</label>
+                        <input type="file" name="piece_jointe" id="piece_jointe">
+                    </div>
+
+                    <button type="submit" class="submit-btn">Soumettre la demande</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
             const pageWrap = document.getElementById('pageWrap');
             const sidebarToggle = document.getElementById('sidebarToggle');
             const topUserBtn = document.getElementById('topUserBtn');
@@ -859,6 +794,10 @@
             const topUserDropdown = document.getElementById('topUserDropdown');
             const demandesToggle = document.getElementById('demandesToggle');
             const demandesDropdown = document.getElementById('menuDropdownDemandes');
+
+            const congeModal = document.getElementById('congeModal');
+            const openCongeModal = document.getElementById('openCongeModal');
+            const closeCongeModal = document.getElementById('closeCongeModal');
 
             if (sidebarToggle) {
                 sidebarToggle.addEventListener('click', function () {
@@ -878,6 +817,26 @@
                     e.stopPropagation();
                     if (!pageWrap.classList.contains('sidebar-collapsed')) {
                         demandesDropdown.classList.toggle('open');
+                    }
+                });
+            }
+
+            if (openCongeModal) {
+                openCongeModal.addEventListener('click', function () {
+                    congeModal.classList.add('show');
+                });
+            }
+
+            if (closeCongeModal) {
+                closeCongeModal.addEventListener('click', function () {
+                    congeModal.classList.remove('show');
+                });
+            }
+
+            if (congeModal) {
+                congeModal.addEventListener('click', function (e) {
+                    if (e.target === congeModal) {
+                        congeModal.classList.remove('show');
                     }
                 });
             }

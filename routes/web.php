@@ -9,8 +9,8 @@ use App\Http\Controllers\Agent\RapportController;
 use App\Http\Controllers\Agent\StatistiqueController as AgentStatistiqueController;
 use App\Http\Controllers\Agent\TempsTravailController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Employe\DemandeCongeController;
-use App\Http\Controllers\Employe\DemandePermissionController;
+use App\Http\Controllers\Employe\CongeController;
+use App\Http\Controllers\Employe\PermissionController;
 use App\Http\Controllers\Employe\HistoriqueController;
 use App\Http\Controllers\Employe\PointageController;
 use App\Http\Controllers\Employe\TempsTravailController as EmployeTempsTravailController;
@@ -60,13 +60,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/historique', [PointageController::class, 'historique'])->name('historique.index');
         Route::get('/temps-travail', [PointageController::class, 'tempsTravail'])->name('temps-travail.index');
 
-        Route::get('/demandes/conges', [DemandeCongeController::class, 'index'])->name('demandes.conges.index');
-        Route::get('/demandes/conges/create', [DemandeCongeController::class, 'create'])->name('demandes.conges.create');
-        Route::post('/demandes/conges', [DemandeCongeController::class, 'store'])->name('demandes.conges.store');
+        Route::get('/demandes/conges', [CongeController::class, 'index'])->name('demandes.conges.index');
+        Route::get('/demandes/conges/create', [CongeController::class, 'create'])->name('demandes.conges.create');
+        Route::post('/demandes/conges', [CongeController::class, 'store'])->name('demandes.conges.store');
 
-        Route::get('/demandes/permissions', [DemandePermissionController::class, 'index'])->name('demandes.permissions.index');
-        Route::get('/demandes/permissions/create', [DemandePermissionController::class, 'create'])->name('demandes.permissions.create');
-        Route::post('/demandes/permissions', [DemandePermissionController::class, 'store'])->name('demandes.permissions.store');
+        Route::get('/demandes/permissions', [PermissionController::class, 'index'])->name('demandes.permissions.index');
+        Route::get('/demandes/permissions/create', [PermissionController::class, 'create'])->name('demandes.permissions.create');
+        Route::post('/demandes/permissions', [PermissionController::class, 'store'])->name('demandes.permissions.store');
     });
 });
 

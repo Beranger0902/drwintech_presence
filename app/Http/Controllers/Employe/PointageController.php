@@ -187,39 +187,90 @@ class PointageController extends Controller
             abort(404, 'Employé introuvable.');
         }
 
-        $presencesSemaine = \App\Models\Presence::where('employe_id', $employe->id)
-            ->whereBetween('date_presence', [now()->startOfWeek(), now()->endOfWeek()])
-            ->orderBy('date_presence')
-            ->get();
+        $periode = $request->get('periode', 'semaine');
 
+        $joursLabels = [];
         $heuresParJour = [];
-        $joursLabels = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+        $titreGraphique = '';
+        $presences = collect();
 
-        for ($i = 0; $i < 7; $i++) {
-            $date = now()->startOfWeek()->copy()->addDays($i)->toDateString();
+        if ($periode === 'mois') {
+            $debut = now()->startOfMonth();
+            $fin = now()->endOfMonth();
+            $titreGraphique = 'Heures de travail du mois';
 
-            $presence = $presencesSemaine->firstWhere('date_presence', $date);
-            $minutes = $presence?->duree_minutes ?? 0;
+            $presences = \App\Models\Presence::where('employe_id', $employe->id)
+                ->whereBetween('date_presence', [$debut->toDateString(), $fin->toDateString()])
+                ->orderBy('date_presence')
+                ->get();
 
-            $heuresParJour[] = round($minutes / 60, 2);
+            $nombreJours = now()->daysInMonth;
+
+            for ($i = 1; $i <= $nombreJours; $i++) {
+                $date = now()->copy()->startOfMonth()->day($i)->toDateString();
+                $presence = $presences->firstWhere('date_presence', $date);
+                $minutes = $presence?->duree_minutes ?? 0;
+
+                $joursLabels[] = (string) $i;
+                $heuresParJour[] = round($minutes / 60, 2);
+            }
+        } else {
+            $debut = now()->startOfWeek();
+            $fin = now()->endOfWeek();
+            $titreGraphique = 'Heures de travail par jour';
+
+            $presences = \App\Models\Presence::where('employe_id', $employe->id)
+                ->whereBetween('date_presence', [$debut->toDateString(), $fin->toDateString()])
+                ->orderBy('date_presence')
+                ->get();
+
+            $labelsFixes = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+
+            for ($i = 0; $i < 7; $i++) {
+                $date = now()->startOfWeek()->copy()->addDays($i)->toDateString();
+                $presence = $presences->firstWhere('date_presence', $date);
+                $minutes = $presence?->duree_minutes ?? 0;
+
+                $joursLabels[] = $labelsFixes[$i];
+                $heuresParJour[] = round($minutes / 60, 2);
+            }
         }
 
-        $totalMinutesSemaine = $presencesSemaine->sum('duree_minutes');
-        $joursTravailles = $presencesSemaine->filter(fn ($p) => !empty($p->heure_arrivee))->count();
+        $totalMinutesPeriode = $presences->sum('duree_minutes');
 
-        $minutesNormales = min($totalMinutesSemaine, 40 * 60);
-        $minutesSupp = max($totalMinutesSemaine - (40 * 60), 0);
+        $presencesMois = \App\Models\Presence::where('employe_id', $employe->id)
+            ->whereMonth('date_presence', now()->month)
+            ->whereYear('date_presence', now()->year)
+            ->get();
+
+        $totalMinutesMois = $presencesMois->sum('duree_minutes');
+        $joursTravailles = $presences->filter(fn ($p) => !empty($p->heure_arrivee))->count();
+
+        $minutesNormales = min($totalMinutesPeriode, 40 * 60);
+        $minutesSupp = max($totalMinutesPeriode - (40 * 60), 0);
 
         $stats = [
-            'heures_semaine' => floor($totalMinutesSemaine / 60) . 'h ' . ($totalMinutesSemaine % 60) . 'min',
-            'heures_supp' => floor($minutesSupp / 60) . 'h ' . ($minutesSupp % 60) . 'min',
+            'periode' => $periode,
+            'heures_periode' => $this->formatMinutes($totalMinutesPeriode),
+            'heures_mois' => $this->formatMinutes($totalMinutesMois),
+            'heures_supp' => $this->formatMinutes($minutesSupp),
             'jours_travailles' => $joursTravailles . ' jours',
             'heures_par_jour' => $heuresParJour,
             'jours_labels' => $joursLabels,
-            'pourcentage_normal' => $totalMinutesSemaine > 0 ? round(($minutesNormales / $totalMinutesSemaine) * 100) : 0,
-            'pourcentage_supp' => $totalMinutesSemaine > 0 ? round(($minutesSupp / $totalMinutesSemaine) * 100) : 0,
+            'titre_graphique' => $titreGraphique,
+            'pourcentage_normal' => $totalMinutesPeriode > 0 ? round(($minutesNormales / $totalMinutesPeriode) * 100) : 0,
+            'pourcentage_supp' => $totalMinutesPeriode > 0 ? round(($minutesSupp / $totalMinutesPeriode) * 100) : 0,
         ];
 
         return view('employe.temps-travail.index', compact('employe', 'stats'));
+    }
+
+    private function formatMinutes(?int $minutes): string
+    {
+        $minutes = $minutes ?? 0;
+        $heures = intdiv($minutes, 60);
+        $reste = $minutes % 60;
+
+        return $heures . 'h ' . str_pad((string) $reste, 2, '0', STR_PAD_LEFT) . 'min';
     }
 }

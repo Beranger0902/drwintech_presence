@@ -23,10 +23,10 @@
         }
 
         .page-wrap {
-            width: 120%;
+            width: 100%;
             max-width: 1260px;
-            min-height: 810px;
-            margin: 16px auto;
+            min-height: 860px;
+            margin: 20px auto;
             background: #edf3fb;
             border-radius: 20px;
             overflow: hidden;
