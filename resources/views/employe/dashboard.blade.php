@@ -552,6 +552,18 @@
             color: #f07b17;
         }
 
+        .status-justified {
+            color: #7b61ff;
+        }
+
+        .status-holiday {
+            color: #3b82f6;
+        }
+
+        .status-weekend {
+            color: #6b7280;
+        }
+
         .stats-card {
             min-height: 220px;
             margin-top: 0;
@@ -847,9 +859,37 @@
                                     <div class="history-item">
                                         <div><strong>{{ \Carbon\Carbon::parse($presence->date_presence)->format('d/m/Y') }}</strong></div>
                                         <div><strong>{{ $presence->heure_arrivee ?? '--:--' }} - {{ $presence->heure_depart ?? '--:--' }}</strong></div>
-                                        <div class="{{ $presence->statut_pointage === 'termine' || $presence->statut_pointage === 'present' ? 'status-present' : 'status-absent' }}">
-                                            {{ $presence->statut_pointage === 'termine' || $presence->statut_pointage === 'present' ? 'Présent' : 'Absent' }}
-                                        </div>
+                                      
+                                      
+                                            @php
+                                                $statut = strtolower($presence->statut_pointage ?? 'absent');
+
+                                                $libelleStatut = match ($statut) {
+                                                    'present' => 'Présent',
+                                                    'termine' => 'Présent',
+                                                    'retard' => 'Retard',
+                                                    'absent' => 'Absent',
+                                                    'absent_justifie' => 'Abs. justifiée',
+                                                    'conge' => 'Congé',
+                                                    'ferie' => 'Férié',
+                                                    'weekend' => 'Week-end',
+                                                    default => ucfirst(str_replace('_', ' ', $statut)),
+                                                };
+
+                                                $classeStatut = match ($statut) {
+                                                    'present', 'termine' => 'status-present',
+                                                    'retard', 'absent' => 'status-absent',
+                                                    'absent_justifie', 'conge' => 'status-justified',
+                                                    'ferie' => 'status-holiday',
+                                                    'weekend' => 'status-weekend',
+                                                    default => '',
+                                                };
+                                            @endphp
+
+                                            <div class="{{ $classeStatut }}">
+                                                {{ $libelleStatut }}
+                                            </div>
+                                    
                                     </div>
                                 @empty
                                     <div class="history-item">
@@ -872,10 +912,21 @@
                                     <span>Cette semaine :</span>
                                     <strong>{{ $stats['semaine'] }}</strong>
                                 </div>
+
+
                                 <div class="resume-row">
                                     <span>Ce mois :</span>
                                     <strong>{{ $stats['mois'] }}</strong>
                                 </div>
+
+                                <div class="resume-row">
+                                    <span>Heures supp :</span>
+                                    <strong>
+                                        {{ floor(($presenceDuJour->heures_supplementaires ?? 0) / 60) }}h 
+                                        {{ ($presenceDuJour->heures_supplementaires ?? 0) % 60 }}min
+                                    </strong>
+                                </div>
+
                             </div>
                         </div>
 
@@ -979,6 +1030,29 @@
                                         Aujourd’hui : {{ $maintenant->format('d/m/Y') }}
                                     </div>
                                 </div>
+                            
+                                <div class="mini-stat-box">
+                                    <div class="mini-stat-title">Statuts du mois</div>
+                                    <div class="mini-card-body">
+                                        <div class="resume-row">
+                                            <span>Présents :</span>
+                                            <strong>{{ $stats['presents'] }}</strong>
+                                        </div>
+                                        <div class="resume-row">
+                                            <span>Retards :</span>
+                                            <strong>{{ $stats['retards'] }}</strong>
+                                        </div>
+                                        <div class="resume-row">
+                                            <span>Absents :</span>
+                                            <strong>{{ $stats['absents'] }}</strong>
+                                        </div>
+                                        <div class="resume-row">
+                                            <span>Abs. justifiées :</span>
+                                            <strong>{{ $stats['absences_justifiees'] }}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            
                             </div>
                         </div>
                     

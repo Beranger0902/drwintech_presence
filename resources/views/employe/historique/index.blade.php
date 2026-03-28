@@ -493,6 +493,18 @@
             background: #e05a47;
         }
 
+        .badge-justifie {
+            background: #7b61ff;
+        }
+
+        .badge-ferie {
+            background: #3b82f6;
+        }
+
+        .badge-justifie {
+            background: #6b7280;
+        }
+
         .pagination-wrapper {
             margin-top: 18px;
             display: flex;
@@ -689,15 +701,39 @@
                                     <td>{{ $historique->heure_arrivee ?? '-' }}</td>
                                     <td>{{ $historique->heure_depart ?? '-' }}</td>
                                     <td>
-                                        @php
-                                            $statut = strtolower($historique->statut_pointage ?? 'absent');
-                                        @endphp
+                                      
+                                      
+                                    @php
+                                        $statut = strtolower($historique->statut_pointage ?? 'absent');
 
-                                        <span class="badge
-                                            {{ $statut === 'present' ? 'badge-present' : '' }}
-                                            {{ $statut === 'termine' ? 'badge-termine' : '' }}
-                                            {{ $statut === 'absent' ? 'badge-absent' : '' }}">
-                                            {{ ucfirst($statut) }}
+                                        $libelleStatut = match ($statut) {
+                                            'present' => 'Présent',
+                                            'termine' => 'Présent',
+                                            'retard' => 'Retard',
+                                            'absent' => 'Absent',
+                                            'absent_justifie' => 'Absence justifiée',
+                                            'conge' => 'Congé',
+                                            'ferie' => 'Férié',
+                                            'weekend' => 'Week-end',
+                                            default => ucfirst(str_replace('_', ' ', $statut)),
+                                        };
+
+                                        $classeStatut = match ($statut) {
+                                            'present' => 'badge-present',
+                                            'termine' => 'badge-termine',
+                                            'retard' => 'badge-absent',
+                                            'absent' => 'badge-absent',
+                                            'absent_justifie' => 'badge-justifie',
+                                            'conge' => 'badge-justifie',
+                                            'ferie' => 'badge-ferie',
+                                            'weekend' => 'badge-weekend',
+                                            default => '',
+                                        };
+                                    @endphp
+
+
+                                        <span class="badge {{ $classeStatut }}">
+                                            {{ $libelleStatut }}
                                         </span>
                                     </td>
                                     <td>{{ $historique->latitude_arrivee ?? '-' }}</td>

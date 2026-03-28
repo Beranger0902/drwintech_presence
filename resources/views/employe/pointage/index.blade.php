@@ -528,6 +528,10 @@
             color: #22a63d;
         }
 
+        .status-justied {
+            color: #0ea5e9;
+        }
+
         .status-error {
             color: #d93025;
         }
@@ -928,7 +932,41 @@
 
                 <div class="info-row">
                     <div class="info-label">Statut actuel :</div>
-                    <div class="info-value status-success" id="statut-actuel">{{ $presenceDuJour?->statut_pointage ?? 'En cours' }}</div>
+                    
+                    
+                    @php
+                        $statutPointage = strtolower($presenceDuJour?->statut_pointage ?? 'en_cours');
+
+                        $libelleStatutPointage = match ($statutPointage) {
+                            'present' => 'Présent',
+                            'termine' => 'Présent',
+                            'retard' => 'Retard',
+                            'absent' => 'Absent',
+                            'absent_justifie' => 'Absence justifiée',
+                            'conge' => 'Congé',
+                            'ferie' => 'Férié',
+                            'weekend' => 'Week-end',
+                            'en_cours' => 'En cours',
+                            default => ucfirst(str_replace('_', ' ', $statutPointage)),
+                        };
+
+                        $classeStatutPointage = match ($statutPointage) {
+                            'present', 'termine' => 'status-success',
+                            'retard', 'absent' => 'status-error',
+                            'absent_justifie', 'conge' => 'status-justified',
+                            'ferie' => 'status-holiday',
+                            'weekend' => 'status-weekend',
+                            default => '',
+                        };
+                    @endphp
+
+
+
+
+                    <div class="info-value {{ $classeStatutPointage }}" id="statut-actuel">
+                        {{ $libelleStatutPointage }}
+                    </div>
+                
                 </div>
 
                 <div class="info-row">
@@ -1074,7 +1112,7 @@
         }
 
         function updateMaps(lat, lng) {
-            const url = `https://maps.google.com/maps?q=Drwintech,Aibatin2,Cotonou,Benin,${lat},${lng}&z=16&output=embed`;
+            const url = `https://maps.google.com/maps?q=${lat},${lng}&z=17&output=embed`;
 
             if (mainMap) mainMap.src = url;
             if (verificationMap) verificationMap.src = url;
@@ -1087,6 +1125,12 @@
             if (positionShort) {
                 positionShort.textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
             }
+
+            // 🔥 STOCKER position pour formulaire aussi
+            if (latitudeArrivee) latitudeArrivee.value = lat;
+            if (longitudeArrivee) longitudeArrivee.value = lng;
+            if (latitudeDepart) latitudeDepart.value = lat;
+            if (longitudeDepart) longitudeDepart.value = lng;
         }
 
         function showVerificationModal() {
@@ -1131,6 +1175,15 @@
                 return;
             }
 
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+
+                    updateMaps(lat, lng); //  met à jour la map DIRECTEMENT
+                }
+            );
+
             showVerificationModal();
 
             navigator.geolocation.getCurrentPosition(
@@ -1168,8 +1221,15 @@
                             return;
                         }
 
-                        if (result.data && result.data.heure) {
-                            successTime.textContent = result.data.heure;
+                        if (result.data && result.data.statut && action === 'arrivee') {
+                            const successPosition = document.querySelector('.success-position');
+                            if (successPosition) {
+                                if (result.data.statut === 'retard') {
+                                    successPosition.innerHTML = 'Statut : <strong>Retard</strong>';
+                                } else {
+                                    successPosition.innerHTML = 'Statut : <strong>Présent</strong>';
+                                }
+                            }
                         }
 
                         if (action === 'arrivee') {
@@ -1185,9 +1245,13 @@
                         }
 
                         const statutActuel = document.getElementById('statut-actuel');
-                        if (statutActuel) {
-                            statutActuel.textContent = action === 'arrivee' ? 'present' : 'termine';
-                        }
+                            if (statutActuel) {
+                                if (action === 'arrivee') {
+                                    statutActuel.textContent = result.data.statut ?? 'present';
+                                } else {
+                                    statutActuel.textContent = 'termine';
+                                }
+                            }
 
                         showSuccessModal();
                     } catch (error) {
