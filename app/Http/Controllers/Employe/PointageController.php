@@ -232,12 +232,21 @@ class PointageController extends Controller
             return $this->jsonResponse(false, 'Aujourd’hui est un week-end. Il n’y a pas de travail prévu.', [], 422);
         }
 
-        $jourFerie = $this->recupererJourFerieDuJour();
+        $service = new JourFerieService();
 
-        if ($jourFerie) {
-            return $this->jsonResponse(false, 'Aujourd’hui est un jour férié : ' . $jourFerie->libelle . '.', [], 422);
+        //  vérifier si déjà en base
+        $jourFerie = $service->estFerie(today());
+
+        if (! $jourFerie) {
+            //  si pas trouvé → synchroniser l’année
+            $service->synchroniser(now()->year);
+
+            $jourFerie = $service->estFerie(today());
         }
 
+        if ($jourFerie) {
+            return $this->jsonResponse(false, "Aujourd’hui est férié : {$jourFerie->libelle}", [], 422);
+        }
 
         $conge = $this->recupererCongeActif($employe);
 

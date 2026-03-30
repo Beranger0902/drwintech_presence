@@ -477,7 +477,7 @@
             padding: 6px 12px;
             border-radius: 7px;
             font-size: 13px;
-            font-weight: bold;
+            font-weight: normal;
             color: white;
         }
 
@@ -502,6 +502,10 @@
         }
 
         .badge-justifie {
+            background: #6b7280;
+        }
+
+        .badge-weekend {
             background: #6b7280;
         }
 
@@ -714,7 +718,7 @@
                                             'absent_justifie' => 'Absence justifiée',
                                             'conge' => 'Congé',
                                             'ferie' => 'Férié',
-                                            'weekend' => 'Week-end',
+                                            'weekend' => 'Weekend',
                                             default => ucfirst(str_replace('_', ' ', $statut)),
                                         };
 
