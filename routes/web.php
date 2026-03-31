@@ -1,5 +1,7 @@
 <?php
 
+
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DemandeController;
 use App\Http\Controllers\Admin\EmployeController;
 use App\Http\Controllers\Admin\StatistiqueController as AdminStatistiqueController;
@@ -8,7 +10,6 @@ use App\Http\Controllers\Agent\PresenceController;
 use App\Http\Controllers\Agent\RapportController;
 use App\Http\Controllers\Agent\StatistiqueController as AgentStatistiqueController;
 use App\Http\Controllers\Agent\TempsTravailController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Employe\CongeController;
 use App\Http\Controllers\Employe\PermissionController;
 use App\Http\Controllers\Employe\HistoriqueController;
@@ -31,8 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // ADMIN
-    Route::prefix('admin')->name('admin.')->middleware('role:administrateur')->group(function () {
-        Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
+        Route::prefix('admin')->name('admin.')->middleware('role:administrateur')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
         Route::resource('utilisateurs', UserController::class);
         Route::resource('employes', EmployeController::class);

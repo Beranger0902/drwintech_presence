@@ -1126,7 +1126,7 @@
                 positionShort.textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
             }
 
-            // 🔥 STOCKER position pour formulaire aussi
+            //  STOCKER position pour formulaire aussi
             if (latitudeArrivee) latitudeArrivee.value = lat;
             if (longitudeArrivee) longitudeArrivee.value = lng;
             if (latitudeDepart) latitudeDepart.value = lat;
@@ -1167,6 +1167,9 @@
             if (errorModal) errorModal.classList.remove('show');
         }
 
+        
+        
+        
         async function startPointage(action) {
             currentAction = action;
 
@@ -1174,15 +1177,6 @@
                 showErrorModal("La géolocalisation n'est pas supportée par votre navigateur.");
                 return;
             }
-
-            navigator.geolocation.getCurrentPosition(
-                function (position) {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-
-                    updateMaps(lat, lng); //  met à jour la map DIRECTEMENT
-                }
-            );
 
             showVerificationModal();
 
@@ -1205,6 +1199,7 @@
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': csrfToken,
                                 'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
                             },
                             body: JSON.stringify({
                                 latitude: lat,
@@ -1212,13 +1207,24 @@
                             })
                         });
 
-                        const result = await response.json();
+                        const text = await response.text();
+                        let result = {};
+
+                        try {
+                            result = JSON.parse(text);
+                        } catch (e) {
+                            throw new Error("Réponse serveur invalide : " + text.substring(0, 200));
+                        }
 
                         hideVerificationModal();
 
                         if (!response.ok || !result.success) {
                             showErrorModal(result.message || "Une erreur est survenue pendant le pointage.");
                             return;
+                        }
+
+                        if (result.data && result.data.heure) {
+                            successTime.textContent = result.data.heure;
                         }
 
                         if (result.data && result.data.statut && action === 'arrivee') {
@@ -1245,18 +1251,20 @@
                         }
 
                         const statutActuel = document.getElementById('statut-actuel');
-                            if (statutActuel) {
-                                if (action === 'arrivee') {
-                                    statutActuel.textContent = result.data.statut ?? 'present';
-                                } else {
-                                    statutActuel.textContent = 'termine';
-                                }
+                        if (statutActuel) {
+                            if (action === 'arrivee') {
+                                statutActuel.textContent = result.data.statut ?? 'present';
+                            } else {
+                                statutActuel.textContent = 'termine';
                             }
+                        }
 
                         showSuccessModal();
+
                     } catch (error) {
                         hideVerificationModal();
-                        showErrorModal("Erreur réseau ou serveur inaccessible.");
+                        console.error(error);
+                        showErrorModal(error.message || "Erreur réseau ou serveur inaccessible.");
                     }
                 },
                 function (error) {
@@ -1280,6 +1288,10 @@
                 }
             );
         }
+
+
+
+
         if (sidebarToggle) {
             sidebarToggle.addEventListener('click', toggleSidebar);
         }

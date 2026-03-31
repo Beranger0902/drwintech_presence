@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Employe;
 
 use App\Http\Controllers\Controller;
 use App\Services\GeolocalisationService;
+use App\Services\JourFerieService;
 use App\Models\Demande;
 use App\Models\JourFerie;
 use Carbon\Carbon;
@@ -136,7 +137,7 @@ class PointageController extends Controller
         $presenceDuJour = null;
 
         if ($employe) {
-            $presenceDuJour = \App\Models\Presence::where('employe_id', $employe->id)
+            $presenceDuJour = Presence::where('employe_id', $employe->id)
                 ->whereDate('date_presence', today())
                 ->first();
         }
@@ -233,19 +234,10 @@ class PointageController extends Controller
         }
 
         $service = new JourFerieService();
+        $libelleFerie = $service->estFerie(today()->toDateString());
 
-        //  vérifier si déjà en base
-        $jourFerie = $service->estFerie(today());
-
-        if (! $jourFerie) {
-            //  si pas trouvé → synchroniser l’année
-            $service->synchroniser(now()->year);
-
-            $jourFerie = $service->estFerie(today());
-        }
-
-        if ($jourFerie) {
-            return $this->jsonResponse(false, "Aujourd’hui est férié : {$jourFerie->libelle}", [], 422);
+        if ($libelleFerie) {
+            return $this->jsonResponse(false, "Aujourd’hui est férié : $libelleFerie", [], 422);
         }
 
         $conge = $this->recupererCongeActif($employe);
@@ -385,19 +377,19 @@ class PointageController extends Controller
       
       
         /**
-         * ❌ CAS BLOQUANT : après 20h → refus
+         *  CAS BLOQUANT : après 20h → refus
          */
         if ($heureDepart->greaterThan($heureMaxDepart)) {
             return $this->jsonResponse(false, 'Pointage refusé : vous avez dépassé l’heure limite de 20h.', [], 422);
         }
 
         /**
-         * 🔢 Calcul du temps total
+         *  Calcul du temps total
          */
         $dureeMinutes = $heureArrivee->diffInMinutes($heureDepart);
 
         /**
-         * 🟢 Temps normal (max jusqu’à 18h30)
+         *  Temps normal (max jusqu’à 18h30)
          */
         $heureFinEffective = $heureDepart->lessThan($heureFinTravail)
             ? $heureDepart
@@ -449,7 +441,7 @@ class PointageController extends Controller
             abort(404, 'Employé introuvable.');
         }
 
-        $query = \App\Models\Presence::where('employe_id', $employe->id);
+        $query = Presence::where('employe_id', $employe->id);
 
         if ($request->filled('date_debut')) {
             $query->whereDate('date_presence', '>=', $request->date_debut);
