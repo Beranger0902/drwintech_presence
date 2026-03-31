@@ -23,7 +23,7 @@
         }
 
         .page-wrap {
-            width: 1400px;
+            width: 1460px;
             min-height: 900px;
             margin: 16px auto;
             background: #edf3fb;
@@ -766,7 +766,7 @@
                     <span class="menu-text">Tableau de bord</span>
                 </a>
 
-                <a href="#">
+                <a href="{{ route('admin.utilisateurs.index') }}">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
                             <circle cx="12" cy="8" r="4"></circle>
@@ -776,7 +776,7 @@
                     <span class="menu-text">Utilisateur</span>
                 </a>
 
-                <a href="#">
+                <a href="{{ route('admin.employe.index') }}">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
                             <path d="M16 21V19A4 4 0 0 0 12 15H8A4 4 0 0 0 4 19V21"></path>
@@ -797,7 +797,7 @@
                                 <path d="M8 13H14"></path>
                             </svg>
                         </span>
-                        <span class="menu-text">Demande</span>
+                        <span class="menu-text">Demandes</span>
                         <span class="menu-arrow menu-text">▾</span>
                     </button>
 

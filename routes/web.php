@@ -22,9 +22,20 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth'])
-    ->name('dashboard');
+Route::get('/dashboard', function () {
+    $user = auth()->user();
+
+    if (! $user) {
+        return redirect()->route('login');
+    }
+
+    return match ($user->role) {
+        'administrateur' => redirect()->route('admin.dashboard'),
+        'employe' => redirect()->route('employe.dashboard'),
+        'agent_accueil' => redirect()->route('agent.dashboard'),
+        default => abort(403, 'Rôle non autorisé.'),
+    };
+})->middleware(['auth'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
