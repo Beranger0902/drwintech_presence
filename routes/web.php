@@ -2,7 +2,7 @@
 
 
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\DemandeController;
+use App\Http\Controllers\Admin\DemandeCongeController;
 use App\Http\Controllers\Admin\EmployeController;
 use App\Http\Controllers\Admin\StatistiqueController as AdminStatistiqueController;
 use App\Http\Controllers\Admin\UserController;
@@ -48,7 +48,9 @@ Route::middleware('auth')->group(function () {
 
         Route::resource('utilisateurs', UserController::class);
         Route::resource('employes', EmployeController::class);
-        Route::resource('demandes', DemandeController::class)->only(['index', 'show', 'update']);
+        Route::get('/demandes/conges', [DemandeCongeController::class, 'index'])->name('demandes.conges.index');
+        Route::patch('/demandes/conges/{demande}/approuver', [DemandeCongeController::class, 'approuver'])->name('demandes.conges.approuver');
+        Route::patch('/demandes/conges/{demande}/refuser', [DemandeCongeController::class, 'refuser'])->name('demandes.conges.refuser');
         Route::get('/statistiques', [AdminStatistiqueController::class, 'index'])->name('statistiques.index');
     });
 

@@ -11,6 +11,9 @@ use Illuminate\Support\Carbon;
 
 class DashboardController extends Controller
 {
+    // Cette méthode vérifie si l'employé a une présence pour aujourd'hui. 
+    // Si ce n'est pas le cas et que l'heure actuelle est passée après l'heure limite, 
+    // elle crée automatiquement une entrée de présence avec le statut "absent" ou un autre statut approprié (weekend, ferie, conge, absent_justifie) selon les conditions.
     private function creerAbsenceAutomatiqueSiNecessaire($employe): void
     {
         if (! $employe) {
@@ -85,7 +88,7 @@ class DashboardController extends Controller
         ]);
     }
 
-    
+    // Cette méthode vérifie si la date donnée (ou la date actuelle si aucune n'est fournie) est un samedi ou un dimanche, indiquant ainsi un jour de week-end.
     private function estWeekend(Carbon $date = null): bool
     {
         $date = $date ?? now();
@@ -93,12 +96,16 @@ class DashboardController extends Controller
         return $date->isSaturday() || $date->isSunday();
     }
 
+    // Cette méthode récupère le jour férié correspondant à la date actuelle en interrogeant la table "jour_feries" pour trouver une entrée dont la date correspond à aujourd'hui. 
+    // Si un jour férié est trouvé, il est retourné ; sinon, la méthode retourne null.
     private function recupererJourFerieDuJour()
     {
         return JourFerie::whereDate('date_ferie', today())->first();
     }
 
-
+// Cette méthode récupère la demande de congé active pour l'employé donné. 
+// Elle interroge la table "demandes" pour trouver les demandes de type "conge" associées à l'employé, puis vérifie si l'une de ces demandes a une période de congé qui inclut la date actuelle. 
+// Si une telle demande est trouvée, elle est retournée ; sinon, la méthode retourne null.
     private function recupererCongeActif($employe)
     {
         return Demande::with('conge')
@@ -115,7 +122,9 @@ class DashboardController extends Controller
     }
 
     
-    
+    // Cette méthode est responsable de l'affichage du tableau de bord de l'employé. 
+    // Elle récupère les données nécessaires pour afficher les informations de présence, les statistiques et les demandes en attente.
+    // Tout d'abord, elle appelle la méthode "creerAbsenceAutomatiqueSiNecessaire" pour s'assurer que les absences sont correctement enregistrées.
     public function index(Request $request)
     {
         $employe = $request->user()->employe;
@@ -231,6 +240,7 @@ class DashboardController extends Controller
         ));
     }
 
+    // Cette méthode prend un nombre de minutes en entrée et le formate en une chaîne de caractères affichant les heures et les minutes.
     private function formatMinutes(?int $minutes): string
     {
         $minutes = $minutes ?? 0;

@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 
 class CongeController extends Controller
 {
+    // Cette méthode index est utilisée pour afficher la liste des demandes de congé d'un employé dans l'interface de l'employé.
+    // Elle récupère les demandes de congé associées à l'employé connecté, les pagine, et les passe à la vue pour affichage.
      public function index(Request $request)
     {
         $employe = $request->user()->employe;
@@ -26,6 +28,10 @@ class CongeController extends Controller
 
         return view('employe.demandes.conges.index', compact('employe', 'demandesConge'));
     }
+
+    // Cette méthode store est utilisée pour soumettre une nouvelle demande de congé par un employé.
+    // Elle valide les données d'entrée, crée une nouvelle demande de congé et un enregistrement de congé associé dans la base de données, puis redirige vers la liste des demandes de congé avec un message de succès. 
+    // En cas d'erreur, elle gère la transaction et redirige avec les messages d'erreur appropriés.
 
     public function store(Request $request)
     {

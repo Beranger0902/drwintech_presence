@@ -15,6 +15,9 @@ use Illuminate\Http\Request;
 
 class PointageController extends Controller
 {
+    // Cette méthode vérifie si l'employé a une présence pour aujourd'hui. 
+    // Si ce n'est pas le cas et que l'heure actuelle est passée après l'heure limite, 
+    // elle crée automatiquement une entrée de présence avec le statut "absent" ou un autre statut approprié (weekend, ferie, conge, absent_justifie) selon les conditions.
         private function creerAbsenceSiNecessaire($employe): void
     {
         if (! $employe) {
@@ -50,6 +53,7 @@ class PointageController extends Controller
             });
 
 
+        // Par défaut, le statut est "absent" si aucune condition particulière n'est remplie
 
         $statut = 'absent';
 
@@ -69,6 +73,7 @@ class PointageController extends Controller
             }
         }
 
+        // Si le statut est "absent" mais qu'il existe une demande de permission couvrant toute la journée, alors le statut est mis à jour en "absent_justifie"
 
        if ($statut === 'absent' && $demandePermission && $demandePermission->permission) {
             $permission = $demandePermission->permission;
@@ -92,13 +97,16 @@ class PointageController extends Controller
     }
 
 
+    // Cette méthode vérifie si le statut donné est l'un des statuts qui bloquent le calcul du temps de travail (absent ou absent_justifie).
     private function statutBloqueCalculTemps(?string $statut): bool
     {
         return in_array($statut, ['absent', 'absent_justifie'], true);
     }
 
 
-
+// Cette méthode vérifie si l'employé a une présence pour aujourd'hui. 
+// Si ce n'est pas le cas et que l'heure actuelle est passée après l'heure limite, 
+// elle crée automatiquement une entrée de présence avec le statut "absent" ou un autre statut approprié (weekend, ferie, conge, absent_justifie) selon les conditions.
     private function estWeekend(Carbon $date = null): bool
     {
         $date = $date ?? now();
@@ -128,7 +136,9 @@ class PointageController extends Controller
     }
 
 
-
+ // Cette méthode est responsable de l'affichage du pointage de l'employé. 
+ // Elle récupère les données nécessaires pour afficher les informations de présence du jour.
+ // Tout d'abord, elle appelle la méthode "creerAbsenceSiNecessaire" pour s'assurer que les absences sont correctement enregistrées. Ensuite, elle récupère la présence du jour pour l'employé et la passe à la vue pour l'affichage.
     //Chargement des données de l'employé depuis la base de donnée pour pouvoir l'afficher au niveau du profil
     public function index(Request $request)
     {
@@ -190,6 +200,8 @@ class PointageController extends Controller
         return $heureActuelle >= $heureDebut && $heureActuelle <= $heureFin;
     }
 
+    // Cette méthode est une fonction utilitaire pour formater les réponses JSON de manière cohérente. 
+    // Elle prend en paramètre un indicateur de succès, un message, des données supplémentaires et un code de statut HTTP, puis retourne une réponse JSON structurée en conséquence.
 
         private function jsonResponse(bool $success, string $message, array $data = [], int $status = 200)
     {
@@ -200,6 +212,9 @@ class PointageController extends Controller
         ], $status);
     }
 
+
+    // Cette méthode détermine le statut du pointage d'arrivée de l'employé en comparant l'heure d'arrivée avec l'heure limite définie dans la configuration. 
+    // Si l'heure d'arrivée est inférieure ou égale à l'heure limite, le statut est "present" ; sinon, il est "retard".
     private function determinerStatutArrivee(\Carbon\Carbon $heureArrivee): string
     {
        $heureDebut = config('pointage.heure_debut');
@@ -212,6 +227,7 @@ class PointageController extends Controller
 
 
 
+    
 //Pointage de l'arrivée de l'employé
 
           public function pointerArrivee(Request $request, GeolocalisationService $geolocalisationService)
@@ -242,11 +258,13 @@ class PointageController extends Controller
 
         $conge = $this->recupererCongeActif($employe);
 
+        // Refuser lorsqu'il est en congé ou il a une permission couvrant toute la journée
+
         if ($conge) {
             return $this->jsonResponse(false, 'Vous êtes actuellement en congé. Votre période de congé n’est pas terminée.', [], 422);
         }
 
-
+  // 
         $latitude = (float) $request->latitude;
         $longitude = (float) $request->longitude;
 
@@ -350,7 +368,7 @@ class PointageController extends Controller
             return $this->jsonResponse(false, 'Aucune présence trouvée pour aujourd’hui.', [], 422);
         }
 
-
+        // Refuser le pointage de départ si l'arrivée n'a pas été pointée ou si le départ a déjà été pointé
 
         if (! $presence->heure_arrivee) {
             return $this->jsonResponse(false, 'Vous devez d’abord pointer votre arrivée.', [], 422);
@@ -400,7 +418,7 @@ class PointageController extends Controller
             : 0;
 
         /**
-         * 🔵 Heures supplémentaires
+         *  Heures supplémentaires
          */
         $dureeSupplementaire = 0;
 
@@ -533,6 +551,7 @@ class PointageController extends Controller
             }
         }
 
+        // Calculer le total des minutes travaillées sur la période sélectionnée
         $totalMinutesPeriode = $presences->sum('duree_minutes');
 
         $presencesMois = Presence::where('employe_id', $employe->id)
@@ -579,7 +598,7 @@ class PointageController extends Controller
         return view('employe.temps-travail.index', compact('employe', 'stats'));
     }
 
-
+    // Formatte les minutes en heures et minutes
     
     private function formatMinutes(?int $minutes): string
     {

@@ -1,6 +1,4 @@
-<div>
-    <!-- Well begun is half done. - Aristotle -->
-</div>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -503,6 +501,30 @@
             resize: vertical;
         }
 
+        .status-pending {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: #e7b11d;
+            color: white;
+        }
+
+        .status-approuver {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: #41b66a;
+            color: white;
+        }
+
+        .status-refuser {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: #2f7de1;
+            color: white;
+        }
+
         .submit-btn {
             border: none;
             background: #2fa13b;
@@ -696,30 +718,49 @@
                                 <tr>
                                     <td>{{ $demande->conge?->type_conge ?? '-' }}</td>
                                     <td>
-                                        {{ optional($demande->conge?->date_debut)->format('d/m/Y') ?? '-' }}
-                                        -
-                                        {{ optional($demande->conge?->date_fin)->format('d/m/Y') ?? '-' }}
-                                    </td>
-                                    <td>{{ $demande->conge?->nombre_jours ?? '-' }}</td>
-                                    <td>
-                                        @php
-                                            $statut = strtolower($demande->statut);
-                                        @endphp
-
-                                        <span class="badge
-                                            {{ $statut === 'en_attente' ? 'badge-attente' : '' }}
-                                            {{ $statut === 'approuve' ? 'badge-approuve' : '' }}
-                                            {{ $statut === 'refuse' ? 'badge-refuse' : '' }}">
-                                            {{ str_replace('_', ' ', ucfirst($statut)) }}
-                                        </span>
+                                        {{ $demande->conge?->date_debut ? \Carbon\Carbon::parse($demande->conge->date_debut)->format('d/m/Y') : '-' }}
+    -
+                                        {{ $demande->conge?->date_fin ? \Carbon\Carbon::parse($demande->conge->date_fin)->format('d/m/Y') : '-' }}
                                     </td>
                                     <td>
-                                        @if ($demande->conge && $demande->conge->piece_jointe)
-                                            <a class="action-link" href="{{ asset('storage/' . $demande->conge->piece_jointe) }}" target="_blank">Voir</a>
+                                        @if($demande->conge?->date_debut && $demande->conge?->date_fin)
+                                            {{ \Carbon\Carbon::parse($demande->conge->date_debut)->diffInDays(\Carbon\Carbon::parse($demande->conge->date_fin)) + 1 }}
                                         @else
                                             -
                                         @endif
                                     </td>
+                                                                        
+                                    
+                                   <td>
+                                        @php
+                                            $classeStatut = match($demande->statut) {
+                                                'approuver' => 'status-approuver',
+                                                'refuser' => 'status-refuser',
+                                                default => 'status-pending',
+                                            };
+
+                                            $libelleStatut = match($demande->statut) {
+                                                'approuver' => 'Approuvé',
+                                                'refuser' => 'Refusé',
+                                                default => 'En attente',
+                                            };
+                                        @endphp
+
+                                        <span class="{{ $classeStatut }}">{{ $libelleStatut }}</span>
+                                    </td>
+                                                                        
+                                    
+                                    <td>
+                                        @if ($demande->conge && $demande->conge->piece_jointe)
+                                            <a class="action-link" href="{{ asset('storage/' . $demande->conge->piece_jointe) }}" target="_blank">
+                                                Voir la pièce
+                                            </a>
+                                        @else
+                                            <span style="color:#7b8da8;">Aucune pièce</span>
+                                        @endif
+                                    </td>
+                                
+                                
                                 </tr>
                             @empty
                                 <tr>

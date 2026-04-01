@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\DB;
 
 class PermissionController extends Controller
 {
+    // Cette méthode affiche la liste des demandes de permission de l'employé connecté. 
+    // Elle récupère les demandes de permission associées à l'employé, les trie par date de soumission et les pagine pour une meilleure lisibilité. 
+    // Ensuite, elle retourne la vue correspondante en passant les données nécessaires pour l'affichage.
     public function index(Request $request)
     {
         $employe = $request->user()->employe;
@@ -23,6 +26,12 @@ class PermissionController extends Controller
         return view('employe.demandes.permissions.index', compact('employe', 'demandesPermission'));
     }
 
+
+    // Cette méthode traite la soumission d'une nouvelle demande de permission. 
+    // Elle valide les données reçues du formulaire, 
+    // crée une nouvelle entrée dans la table "demandes" pour enregistrer la demande de permission, 
+    // puis crée une entrée correspondante dans la table "permissions" pour stocker les détails spécifiques de la permission (date, heure de début, heure de fin). 
+    // Enfin, elle redirige l'utilisateur vers la page précédente avec un message de succès indiquant que la permission a été envoyée.
     public function store(Request $request)
     {
         $employe = $request->user()->employe;

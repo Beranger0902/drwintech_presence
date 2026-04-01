@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Utilisateur - Administration</title>
+    <title>Employé - Administration</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
@@ -23,7 +23,7 @@
         }
 
         .page-wrap {
-            width: 1400px;
+            width: 1460px;
             min-height: 900px;
             margin: 16px auto;
             background: #edf3fb;
@@ -56,6 +56,7 @@
             object-fit: contain;
             display: block;
             padding: 6px 10px;
+            background: transparent;
         }
 
         .topbar {
@@ -241,12 +242,6 @@
             fill: none;
         }
 
-        .menu-dropdown {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
         .menu-arrow {
             margin-left: auto;
             font-size: 14px;
@@ -344,12 +339,7 @@
             margin-bottom: 16px;
         }
 
-        .toolbar-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
+        .toolbar-left,
         .toolbar-right {
             display: flex;
             align-items: center;
@@ -361,17 +351,28 @@
             background: #2f7de1;
             color: white;
             border: none;
-            border-radius: 10px;
-            padding: 12px 18px;
-            font-size: 14px;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 13px;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-primary:hover {
             background: #266dca;
         }
 
-        .filter-select,
+        .btn-primary svg,
+        .btn-secondary svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
         .search-input {
             height: 42px;
             border: 1px solid #dbe5f2;
@@ -381,10 +382,7 @@
             padding: 0 14px;
             font-size: 14px;
             outline: none;
-        }
-
-        .search-input {
-            width: 220px;
+            width: 260px;
         }
 
         .stats-grid {
@@ -489,13 +487,13 @@
             border-bottom: 1px solid #edf3fb;
             font-size: 14px;
             color: #35527c;
+            vertical-align: middle;
         }
 
         tbody tr:hover {
             background: rgba(47, 125, 225, 0.04);
         }
 
-        .role-badge,
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -507,12 +505,9 @@
             color: white;
         }
 
-        .role-admin { background: #2f7de1; }
-        .role-agent { background: #e7b11d; }
-        .role-employe { background: #41b66a; }
-
         .status-active { background: #41b66a; }
-        .status-inactive { background: #e7b11d; }
+        .status-conge { background: #e7b11d; }
+        .status-permission { background: #2f7de1; }
 
         .actions-cell {
             display: flex;
@@ -598,7 +593,7 @@
             align-items: center;
             justify-content: center;
             z-index: 3000;
-            padding: 16px;
+            padding: 10px;
         }
 
         .modal-overlay.show {
@@ -607,15 +602,15 @@
 
         .modal-box {
             width: 100%;
-            max-width: 520px;
+            max-width: 700px;
             background: white;
-            border-radius: 16px;
-            box-shadow: 0 18px 50px rgba(0,0,0,0.18);
+            border-radius: 14px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
             overflow: hidden;
         }
 
         .modal-header {
-            padding: 16px 18px;
+            padding: 12px 16px;
             border-bottom: 1px solid #e6edf7;
             display: flex;
             align-items: center;
@@ -634,17 +629,28 @@
             font-size: 24px;
             color: #6d84a3;
             cursor: pointer;
+            text-decoration: none;
         }
 
         .modal-body {
-            padding: 18px;
+            padding: 16px 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
         }
 
         .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: 14px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
         }
 
         .form-group label {
@@ -654,11 +660,11 @@
 
         .form-group input,
         .form-group select {
-            height: 42px;
+            height: 36px;
             border: 1px solid #cfdcec;
             border-radius: 8px;
             padding: 0 12px;
-            font-size: 14px;
+            font-size: 13px;
             color: #35527c;
             outline: none;
             background: white;
@@ -677,9 +683,13 @@
             color: #35527c;
             border: none;
             border-radius: 10px;
-            padding: 12px 18px;
-            font-size: 14px;
+            padding: 8px 14px;
+            font-size: 13px;
             cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-secondary:hover {
@@ -693,7 +703,7 @@
 
         .detail-row {
             display: grid;
-            grid-template-columns: 130px 1fr;
+            grid-template-columns: 150px 1fr;
             gap: 12px;
             align-items: center;
             font-size: 14px;
@@ -758,17 +768,17 @@
             </div>
 
             <nav class="menu">
-                <a href="{{ route('admin.dashboard') }}">
+                <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
                             <path d="M3 10.5L12 3L21 10.5"></path>
-                            <path d="M5 9.5V21H19V9.5"></path>
+<path d="M5 9.5V21H19V9.5"></path>
                         </svg>
                     </span>
                     <span class="menu-text">Tableau de bord</span>
                 </a>
 
-                <a href="{{ route('admin.utilisateurs.index') }}" class="active">
+                <a href="{{ route('admin.utilisateurs.index') }}" class="{{ request()->routeIs('admin.utilisateurs.*') ? 'active' : '' }}">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
                             <circle cx="12" cy="8" r="4"></circle>
@@ -778,7 +788,7 @@
                     <span class="menu-text">Utilisateur</span>
                 </a>
 
-                <a href="{{ route('admin.employes.index') }}">
+                <a href="{{ route('admin.employes.index') }}" class="{{ request()->routeIs('admin.employes.*') ? 'active' : '' }}">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
                             <path d="M16 21V19A4 4 0 0 0 12 15H8A4 4 0 0 0 4 19V21"></path>
@@ -790,7 +800,7 @@
                     <span class="menu-text">Employé</span>
                 </a>
 
-                <div class="menu-dropdown" id="menuDropdownDemandes">
+                <div class="menu-dropdown {{ request()->routeIs('admin.demandes.*') ? 'open' : '' }}" id="menuDropdownDemandes">
                     <button type="button" class="menu-dropdown-toggle" id="demandesToggle">
                         <span class="menu-icon">
                             <svg viewBox="0 0 24 24">
@@ -799,7 +809,7 @@
                                 <path d="M8 13H14"></path>
                             </svg>
                         </span>
-                        <span class="menu-text">Demande</span>
+                        <span class="menu-text">Demandes</span>
                         <span class="menu-arrow menu-text">▾</span>
                     </button>
 
@@ -829,11 +839,11 @@
 
         <main class="content">
             <div class="content-header">
-                <h1>Utilisateur</h1>
+                <h1>Gestion des Employés</h1>
                 <div class="breadcrumb">
                     <a href="{{ route('admin.dashboard') }}">Accueil</a>
                     &nbsp; / &nbsp;
-                    <a href="{{ route('admin.utilisateurs.index') }}">Utilisateur</a>
+                    <a href="{{ route('admin.employes.index') }}">Employé</a>
                 </div>
             </div>
 
@@ -852,32 +862,21 @@
                     </ul>
                 </div>
             @endif
-
-            <div class="toolbar-card">
+<div class="toolbar-card">
                 <div class="toolbar-left">
                     <button type="button" class="btn-primary" id="openCreateModal">
-                        Ajouter Utilisateur
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 5V19"></path>
+                            <path d="M5 12H19"></path>
+                        </svg>
+                        Ajouter Employé
                     </button>
                 </div>
 
                 <div class="toolbar-right">
-                    <form method="GET" action="{{ route('admin.utilisateurs.index') }}" style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-                        <select name="role" class="filter-select">
-                            <option value="">Tous les rôles</option>
-                            <option value="administrateur" {{ request('role') === 'administrateur' ? 'selected' : '' }}>Administrateur</option>
-                            <option value="agent_accueil" {{ request('role') === 'agent_accueil' ? 'selected' : '' }}>Agent d’accueil</option>
-                            <option value="employe" {{ request('role') === 'employe' ? 'selected' : '' }}>Employé</option>
-                        </select>
-
-                        <select name="statut" class="filter-select">
-                            <option value="">Tous les statuts</option>
-                            <option value="actif" {{ request('statut') === 'actif' ? 'selected' : '' }}>Actif</option>
-                            <option value="inactif" {{ request('statut') === 'inactif' ? 'selected' : '' }}>Inactif</option>
-                        </select>
-
+                    <form method="GET" action="{{ route('admin.employes.index') }}" style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
                         <input type="text" name="search" class="search-input" placeholder="Rechercher..." value="{{ request('search') }}">
-
-                        <button type="submit" class="btn-primary">Filtrer</button>
+                        <button type="submit" class="btn-primary">Rechercher</button>
                     </form>
                 </div>
             </div>
@@ -886,55 +885,59 @@
                 <div class="summary-card summary-card-blue">
                     <div class="summary-icon summary-blue">
                         <svg viewBox="0 0 24 24">
-                            <circle cx="12" cy="8" r="4"></circle>
-                            <path d="M4 20C4 16.5 7.5 14 12 14C16.5 14 20 16.5 20 20"></path>
+                            <circle cx="9" cy="8" r="3"></circle>
+                            <circle cx="17" cy="8" r="3"></circle>
+                            <path d="M2 19C2 15.5 5 13.5 9 13.5C13 13.5 16 15.5 16 19"></path>
+                            <path d="M12 19C12 16.5 14 15 17 15C20 15 22 16.5 22 19"></path>
                         </svg>
                     </div>
                     <div>
-                        <div class="summary-title">Total Utilisateurs</div>
-                        <div class="summary-value">{{ $totalUsers }}</div>
-                    </div>
-                </div>
-
-                <div class="summary-card summary-card-blue">
-                    <div class="summary-icon summary-blue">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 3L20 7V12C20 17 16.5 20 12 21C7.5 20 4 17 4 12V7L12 3Z"></path>
-                            <path d="M9.5 12L11 13.5L14.5 10"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="summary-title">Administrateurs</div>
-                        <div class="summary-value">{{ $totalAdmins }}</div>
-                    </div>
-                </div>
-
-                <div class="summary-card summary-card-yellow">
-                    <div class="summary-icon summary-yellow">
-                        <svg viewBox="0 0 24 24">
-                            <circle cx="12" cy="8" r="4"></circle>
-                            <path d="M4 20C4 16.5 7.5 14 12 14C16.5 14 20 16.5 20 20"></path>
-                            <path d="M19 8V14"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="summary-title">Agents d’accueil</div>
-                        <div class="summary-value">{{ $totalAgents }}</div>
+                        <div class="summary-title">Total Employés</div>
+                        <div class="summary-value">{{ $totalEmployes }}</div>
                     </div>
                 </div>
 
                 <div class="summary-card summary-card-green">
                     <div class="summary-icon summary-green">
                         <svg viewBox="0 0 24 24">
-                            <path d="M16 21V19A4 4 0 0 0 12 15H8A4 4 0 0 0 4 19V21"></path>
-                            <circle cx="10" cy="7" r="4"></circle>
-                            <path d="M20 8V14"></path>
-                            <path d="M23 11H17"></path>
+                            <path d="M4 5H16V19H4Z"></path>
+                            <path d="M8 9H12"></path>
+                            <path d="M8 13H12"></path>
+                            <circle cx="19" cy="17" r="3"></circle>
+                            <path d="M19 14V17L21 18"></path>
                         </svg>
                     </div>
                     <div>
-                        <div class="summary-title">Employés</div>
-                        <div class="summary-value">{{ $totalEmployes }}</div>
+                        <div class="summary-title">Enregistrés</div>
+                        <div class="summary-value">{{ $enregistres }}</div>
+                    </div>
+                </div>
+
+                <div class="summary-card summary-card-yellow">
+                    <div class="summary-icon summary-yellow">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 12A9 9 0 1 0 12 3"></path>
+                            <path d="M12 7V12L15 15"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="summary-title">En congé</div>
+                        <div class="summary-value">{{ $enConge }}</div>
+                    </div>
+                </div>
+
+                <div class="summary-card summary-card-blue">
+                    <div class="summary-icon summary-blue">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M6 2H18"></path>
+                            <path d="M6 22H18"></path>
+                            <path d="M8 2V6C8 8.5 10 10 12 12C14 14 16 15.5 16 18V22"></path>
+                            <path d="M16 2V6C16 8.5 14 10 12 12C10 14 8 15.5 8 18V22"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="summary-title">En permission</div>
+                        <div class="summary-value">{{ $enPermission }}</div>
                     </div>
                 </div>
             </div>
@@ -944,58 +947,53 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Nom</th>
-                                <th>Email</th>
-                                <th>Rôle</th>
+                                <th>Matricule</th>
+                                <th>Nom et prénom</th>
+                                <th>Poste</th>
+                                <th>Département</th>
+                                <th>Date d’embauche</th>
                                 <th>Statut</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            @forelse($users as $user)
+                            @forelse($employes as $employe)
                                 @php
-                                    $roleLabel = match($user->role) {
-                                        'administrateur' => 'Administrateur',
-                                        'agent_accueil' => 'Agent d’accueil',
-                                        default => 'Employé',
-                                    };
-
-                                    $roleClass = match($user->role) {
-                                        'administrateur' => 'role-admin',
-                                        'agent_accueil' => 'role-agent',
-                                        default => 'role-employe',
+                                    $statusClass = match($employe->statut_calcule) {
+                                        'En congé' => 'status-conge',
+                                        'En permission' => 'status-permission',
+                                        default => 'status-active',
                                     };
                                 @endphp
-
-                                <tr>
-                                    <td>{{ $user->name }}</td>
-                                    <td>{{ $user->email }}</td>
+ <tr>
+                                    <td>{{ $employe->matricule }}</td>
+                                    <td>{{ $employe->nom }} {{ $employe->prenom }}</td>
+                                    <td>{{ $employe->poste }}</td>
+                                    <td>{{ $employe->departement }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($employe->date_embauche)->format('d/m/Y') }}</td>
                                     <td>
-                                        <span class="role-badge {{ $roleClass }}">{{ $roleLabel }}</span>
-                                    </td>
-                                    <td>
-                                        <span class="status-badge {{ $user->actif ? 'status-active' : 'status-inactive' }}">
-                                            {{ $user->actif ? 'Actif' : 'Inactif' }}
+                                        <span class="status-badge {{ $statusClass }}">
+                                            {{ $employe->statut_calcule }}
                                         </span>
                                     </td>
                                     <td>
                                         <div class="actions-cell">
-                                            <a href="{{ route('admin.utilisateurs.index', array_merge(request()->query(), ['view' => $user->id])) }}" class="action-btn action-view">
+                                            <a href="{{ route('admin.employes.index', array_merge(request()->query(), ['view' => $employe->id])) }}" class="action-btn action-view">
                                                 <svg viewBox="0 0 24 24">
                                                     <path d="M1 12C3.5 7 7.5 4 12 4C16.5 4 20.5 7 23 12C20.5 17 16.5 20 12 20C7.5 20 3.5 17 1 12Z"></path>
                                                     <circle cx="12" cy="12" r="3"></circle>
                                                 </svg>
                                             </a>
 
-                                            <a href="{{ route('admin.utilisateurs.index', array_merge(request()->query(), ['edit' => $user->id])) }}" class="action-btn action-edit">
+                                            <a href="{{ route('admin.employes.index', array_merge(request()->query(), ['edit' => $employe->id])) }}" class="action-btn action-edit">
                                                 <svg viewBox="0 0 24 24">
                                                     <path d="M12 20H21"></path>
                                                     <path d="M16.5 3.5A2.1 2.1 0 0 1 19.5 6.5L7 19L3 20L4 16L16.5 3.5Z"></path>
                                                 </svg>
                                             </a>
 
-                                            <a href="{{ route('admin.utilisateurs.index', array_merge(request()->query(), ['delete' => $user->id])) }}" class="action-btn action-delete">
+                                            <a href="{{ route('admin.employes.index', array_merge(request()->query(), ['delete' => $employe->id])) }}" class="action-btn action-delete">
                                                 <svg viewBox="0 0 24 24">
                                                     <path d="M3 6H21"></path>
                                                     <path d="M8 6V4H16V6"></path>
@@ -1007,7 +1005,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5">Aucun utilisateur trouvé.</td>
+                                    <td colspan="7">Aucun employé trouvé.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -1015,7 +1013,7 @@
                 </div>
 
                 <div class="pagination-wrap">
-                    {{ $users->links() }}
+                    {{ $employes->links() }}
                 </div>
             </div>
         </main>
@@ -1025,49 +1023,68 @@
     <div class="modal-overlay" id="createModal">
         <div class="modal-box">
             <div class="modal-header">
-                <h2>Ajouter Utilisateur</h2>
+                <h2>Ajouter Employé</h2>
                 <button type="button" class="close-modal-btn" data-close="createModal">&times;</button>
             </div>
 
             <div class="modal-body">
-                <form method="POST" action="{{ route('admin.utilisateurs.store') }}">
+                <form method="POST" action="{{ route('admin.employes.store') }}">
                     @csrf
 
-                    <div class="form-group">
-                        <label for="create_name">Nom complet</label>
-                        <input type="text" id="create_name" name="name" value="{{ old('name') }}" required>
-                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="matricule">Matricule</label>
+                            <input type="text" id="matricule" name="matricule" value="{{ old('matricule') }}" required>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="create_email">Adresse email</label>
-                        <input type="email" id="create_email" name="email" value="{{ old('email') }}" required>
-                    </div>
+                        <div class="form-group">
+                            <label for="email">Email utilisateur existant</label>
+                            <input type="email" id="email" name="email" value="{{ old('email') }}" required>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="create_password">Mot de passe</label>
-                        <input type="password" id="create_password" name="password" required>
-                    </div>
+                        <div class="form-group">
+                            <label for="nom">Nom</label>
+                            <input type="text" id="nom" name="nom" value="{{ old('nom') }}" required>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="create_role">Rôle</label>
-                        <select id="create_role" name="role" required>
-                            <option value="administrateur" {{ old('role') === 'administrateur' ? 'selected' : '' }}>Administrateur</option>
-                            <option value="agent_accueil" {{ old('role') === 'agent_accueil' ? 'selected' : '' }}>Agent d’accueil</option>
-                            <option value="employe" {{ old('role') === 'employe' ? 'selected' : '' }}>Employé</option>
-                        </select>
-                    </div>
+                        <div class="form-group">
+                            <label for="prenom">Prénom</label>
+                            <input type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" required>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="create_actif">Statut</label>
-                        <select id="create_actif" name="actif" required>
-                            <option value="1" {{ old('actif', '1') == '1' ? 'selected' : '' }}>Actif</option>
-                            <option value="0" {{ old('actif') === '0' ? 'selected' : '' }}>Inactif</option>
-                        </select>
+                        <div class="form-group">
+                            <label for="telephone">Téléphone</label>
+                            <input type="text" id="telephone" name="telephone" value="{{ old('telephone') }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="poste">Poste</label>
+                            <input type="text" id="poste" name="poste" value="{{ old('poste') }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="departement">Département</label>
+                            <input type="text" id="departement" name="departement" value="{{ old('departement') }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date_naissance">Date de naissance</label>
+                            <input type="date" id="date_naissance" name="date_naissance" value="{{ old('date_naissance') }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date_embauche">Date d’embauche</label>
+                            <input type="date" id="date_embauche" name="date_embauche" value="{{ old('date_embauche') }}" required>
+                        </div>
                     </div>
 
                     <div class="modal-actions">
-                        <button type="button" class="btn-secondary" data-close="createModal">Annuler</button>
-                        <button type="submit" class="btn-primary">Enregistrer</button>
+                        <button type="button" class="btn-secondary" data-close="createModal">
+                            Annuler
+                        </button>
+                        <button type="submit" class="btn-primary">
+                            Enregistrer
+                        </button>
                     </div>
                 </form>
             </div>
@@ -1075,196 +1092,144 @@
     </div>
 
     {{-- MODAL VOIR --}}
-    @if($selectedUser && $openModal === 'view')
-        <div class="modal-overlay show" id="viewModal">
+    @if($selectedEmploye && $openModal === 'view')
+        <div class="modal-overlay show">
             <div class="modal-box">
                 <div class="modal-header">
-                    <h2>Détail Utilisateur</h2>
-                    <a href="{{ route('admin.utilisateurs.index', request()->except(['view'])) }}" class="close-modal-btn" style="text-decoration:none;">&times;</a>
+                    <h2>Détail Employé</h2>
+                    <a href="{{ route('admin.employes.index', request()->except(['view'])) }}" class="close-modal-btn">&times;</a>
                 </div>
 
                 <div class="modal-body">
                     <div class="detail-list">
                         <div class="detail-row">
-                            <div class="detail-label">Nom</div>
-                            <div class="detail-value">{{ $selectedUser->name }}</div>
+                            <div class="detail-label">Matricule</div>
+                            <div class="detail-value">{{ $selectedEmploye->matricule }}</div>
                         </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Nom</div>
+                            <div class="detail-value">{{ $selectedEmploye->nom }}</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Prénom</div>
+                            <div class="detail-value">{{ $selectedEmploye->prenom }}</div>
+                        </div>
+
                         <div class="detail-row">
                             <div class="detail-label">Email</div>
-                            <div class="detail-value">{{ $selectedUser->email }}</div>
+                            <div class="detail-value">{{ $selectedEmploye->user?->email }}</div>
                         </div>
+
                         <div class="detail-row">
-                            <div class="detail-label">Rôle</div>
-                            <div class="detail-value">
-                                {{ $selectedUser->role === 'administrateur' ? 'Administrateur' : ($selectedUser->role === 'agent_accueil' ? 'Agent d’accueil' : 'Employé') }}
-                            </div>
+                            <div class="detail-label">Téléphone</div>
+                            <div class="detail-value">{{ $selectedEmploye->telephone }}</div>
                         </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Poste</div>
+                            <div class="detail-value">{{ $selectedEmploye->poste }}</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Département</div>
+                            <div class="detail-value">{{ $selectedEmploye->departement }}</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Date naissance</div>
+                            <div class="detail-value">{{ \Carbon\Carbon::parse($selectedEmploye->date_naissance)->format('d/m/Y') }}</div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-label">Date embauche</div>
+                            <div class="detail-value">{{ \Carbon\Carbon::parse($selectedEmploye->date_embauche)->format('d/m/Y') }}</div>
+                        </div>
+
                         <div class="detail-row">
                             <div class="detail-label">Statut</div>
-                            <div class="detail-value">{{ $selectedUser->actif ? 'Actif' : 'Inactif' }}</div>
-                        </div>
-                        <div class="detail-row">
-                            <div class="detail-label">Créé le</div>
-                            <div class="detail-value">{{ $selectedUser->created_at?->format('d/m/Y H:i') }}</div>
+                            <div class="detail-value">{{ $selectedEmploye->statut_calcule }}</div>
                         </div>
                     </div>
 
                     <div class="modal-actions">
-                        <a href="{{ route('admin.utilisateurs.index', request()->except(['view'])) }}" class="btn-secondary" style="text-decoration:none;">Fermer</a>
+                        <a href="{{ route('admin.employes.index', request()->except(['view'])) }}" class="btn-secondary">
+                            Fermer
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     @endif
-
-    {{-- MODAL MODIFIER --}}
-    @if($selectedUser && $openModal === 'edit')
-        <div class="modal-overlay show" id="editModal">
+{{-- MODAL MODIFIER --}}
+    @if($selectedEmploye && $openModal === 'edit')
+        <div class="modal-overlay show">
             <div class="modal-box">
                 <div class="modal-header">
-                    <h2>Modifier Utilisateur</h2>
-                    <a href="{{ route('admin.utilisateurs.index', request()->except(['edit'])) }}" class="close-modal-btn" style="text-decoration:none;">&times;</a>
+                    <h2>Modifier Employé</h2>
+                    <a href="{{ route('admin.employes.index', request()->except(['edit'])) }}" class="close-modal-btn">&times;</a>
                 </div>
 
                 <div class="modal-body">
-                    <form method="POST" action="{{ route('admin.utilisateurs.update', $selectedUser->id) }}">
+                    <form method="POST" action="{{ route('admin.employes.update', $selectedEmploye->id) }}">
                         @csrf
                         @method('PUT')
 
-                        <div class="form-group">
-                            <label for="edit_name">Nom complet</label>
-                            <input type="text" id="edit_name" name="name" value="{{ old('name', $selectedUser->name) }}" required>
-                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="edit_matricule">Matricule</label>
+                                <input type="text" id="edit_matricule" name="matricule" value="{{ old('matricule', $selectedEmploye->matricule) }}" required>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="edit_email">Adresse email</label>
-                            <input type="email" id="edit_email" name="email" value="{{ old('email', $selectedUser->email) }}" required>
-                        </div>
+                            <div class="form-group">
+                                <label>Email utilisateur</label>
+                                <input type="text" value="{{ $selectedEmploye->user?->email }}" disabled>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="edit_password">Nouveau mot de passe</label>
-                            <input type="password" id="edit_password" name="password" placeholder="Laisser vide pour ne pas changer">
-                        </div>
+                            <div class="form-group">
+                                <label for="edit_nom">Nom</label>
+                                <input type="text" id="edit_nom" name="nom" value="{{ old('nom', $selectedEmploye->nom) }}" required>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="edit_role">Rôle</label>
-                            <select id="edit_role" name="role" required>
-                                <option value="administrateur" {{ old('role', $selectedUser->role) === 'administrateur' ? 'selected' : '' }}>Administrateur</option>
-                                <option value="agent_accueil" {{ old('role', $selectedUser->role) === 'agent_accueil' ? 'selected' : '' }}>Agent d’accueil</option>
-                                <option value="employe" {{ old('role', $selectedUser->role) === 'employe' ? 'selected' : '' }}>Employé</option>
-                            </select>
-                        </div>
+                            <div class="form-group">
+                                <label for="edit_prenom">Prénom</label>
+                                <input type="text" id="edit_prenom" name="prenom" value="{{ old('prenom', $selectedEmploye->prenom) }}" required>
+                            </div>
 
-                        <div class="form-group">
-                            <label for="edit_actif">Statut</label>
-                            <select id="edit_actif" name="actif" required>
-                                <option value="1" {{ (string) old('actif', $selectedUser->actif ? '1' : '0') === '1' ? 'selected' : '' }}>Actif</option>
-                                <option value="0" {{ (string) old('actif', $selectedUser->actif ? '1' : '0') === '0' ? 'selected' : '' }}>Inactif</option>
-                            </select>
-                        </div>
+                            <div class="form-group">
+                                <label for="edit_telephone">Téléphone</label>
+                                <input type="text" id="edit_telephone" name="telephone" value="{{ old('telephone', $selectedEmploye->telephone) }}" required>
+                            </div>
 
-                        <div class="modal-actions">
-                        <button type="button" class="btn-secondary" data-close="createModal">Annuler</button>
-                        <button type="submit" class="btn-primary">Enregistrer</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        </div>
- @endif
+                            <div class="form-group">
+                                <label for="edit_poste">Poste</label>
+                                <input type="text" id="edit_poste" name="poste" value="{{ old('poste', $selectedEmploye->poste) }}" required>
+                            </div>
 
-    {{-- MODAL VOIR --}}
-    @if($selectedUser && $openModal === 'view')
-        <div class="modal-overlay show" id="viewModal">
-            <div class="modal-box">
-                <div class="modal-header">
-                    <h2>Détail Utilisateur</h2>
-                    <a href="{{ route('admin.utilisateurs.index', request()->except(['view'])) }}" class="close-modal-btn" style="text-decoration:none;">&times;</a>
-                </div>
+                            <div class="form-group">
+                                <label for="edit_departement">Département</label>
+                                <input type="text" id="edit_departement" name="departement" value="{{ old('departement', $selectedEmploye->departement) }}" required>
+                            </div>
 
-                <div class="modal-body">
-                    <div class="detail-list">
-                        <div class="detail-row">
-                            <div class="detail-label">Nom</div>
-                            <div class="detail-value">{{ $selectedUser->name }}</div>
-                        </div>
-                        <div class="detail-row">
-                            <div class="detail-label">Email</div>
-                            <div class="detail-value">{{ $selectedUser->email }}</div>
-                        </div>
-                        <div class="detail-row">
-                            <div class="detail-label">Rôle</div>
-                            <div class="detail-value">
-                                {{ $selectedUser->role === 'administrateur' ? 'Administrateur' : ($selectedUser->role === 'agent_accueil' ? 'Agent d’accueil' : 'Employé') }}
+                            <div class="form-group">
+                                <label for="edit_date_naissance">Date de naissance</label>
+                                <input type="date" id="edit_date_naissance" name="date_naissance" value="{{ old('date_naissance', $selectedEmploye->date_naissance) }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="edit_date_embauche">Date d’embauche</label>
+                                <input type="date" id="edit_date_embauche" name="date_embauche" value="{{ old('date_embauche', $selectedEmploye->date_embauche) }}" required>
                             </div>
                         </div>
-                        <div class="detail-row">
-                            <div class="detail-label">Statut</div>
-                            <div class="detail-value">{{ $selectedUser->actif ? 'Actif' : 'Inactif' }}</div>
-                        </div>
-                        <div class="detail-row">
-                            <div class="detail-label">Créé le</div>
-                            <div class="detail-value">{{ $selectedUser->created_at?->format('d/m/Y H:i') }}</div>
-                        </div>
-                    </div>
-
-                    <div class="modal-actions">
-                        <a href="{{ route('admin.utilisateurs.index', request()->except(['view'])) }}" class="btn-secondary" style="text-decoration:none;">Fermer</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
-
-    {{-- MODAL MODIFIER --}}
-    @if($selectedUser && $openModal === 'edit')
-        <div class="modal-overlay show" id="editModal">
-            <div class="modal-box">
-                <div class="modal-header">
-                    <h2>Modifier Utilisateur</h2>
-                    <a href="{{ route('admin.utilisateurs.index', request()->except(['edit'])) }}" class="close-modal-btn" style="text-decoration:none;">&times;</a>
-                </div>
-
-                <div class="modal-body">
-                    <form method="POST" action="{{ route('admin.utilisateurs.update', $selectedUser->id) }}">
-                        @csrf
-                        @method('PUT')
-
-                        <div class="form-group">
-                            <label for="edit_name">Nom complet</label>
-                            <input type="text" id="edit_name" name="name" value="{{ old('name', $selectedUser->name) }}" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="edit_email">Adresse email</label>
-                            <input type="email" id="edit_email" name="email" value="{{ old('email', $selectedUser->email) }}" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="edit_password">Nouveau mot de passe</label>
-                            <input type="password" id="edit_password" name="password" placeholder="Laisser vide pour ne pas changer">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="edit_role">Rôle</label>
-                            <select id="edit_role" name="role" required>
-                                <option value="administrateur" {{ old('role', $selectedUser->role) === 'administrateur' ? 'selected' : '' }}>Administrateur</option>
-                                <option value="agent_accueil" {{ old('role', $selectedUser->role) === 'agent_accueil' ? 'selected' : '' }}>Agent d’accueil</option>
-                                <option value="employe" {{ old('role', $selectedUser->role) === 'employe' ? 'selected' : '' }}>Employé</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="edit_actif">Statut</label>
-                            <select id="edit_actif" name="actif" required>
-                                <option value="1" {{ (string) old('actif', $selectedUser->actif ? '1' : '0') === '1' ? 'selected' : '' }}>Actif</option>
-                                <option value="0" {{ (string) old('actif', $selectedUser->actif ? '1' : '0') === '0' ? 'selected' : '' }}>Inactif</option>
-                            </select>
-                        </div>
 
                         <div class="modal-actions">
-                            <a href="{{ route('admin.utilisateurs.index', request()->except(['edit'])) }}" class="btn-secondary" style="text-decoration:none;">Annuler</a>
-                            <button type="submit" class="btn-primary">Mettre à jour</button>
+                            <a href="{{ route('admin.employes.index', request()->except(['edit'])) }}" class="btn-secondary">
+                                Annuler
+                            </a>
+                            <button type="submit" class="btn-primary">
+                                Mettre à jour
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -1273,34 +1238,46 @@
     @endif
 
     {{-- MODAL SUPPRIMER --}}
-    @if($selectedUser && $openModal === 'delete')
-        <div class="modal-overlay show" id="deleteModal">
+    @if($selectedEmploye && $openModal === 'delete')
+        <div class="modal-overlay show">
             <div class="modal-box">
                 <div class="modal-header">
-                    <h2>Supprimer Utilisateur</h2>
-                    <a href="{{ route('admin.utilisateurs.index', request()->except(['delete'])) }}" class="close-modal-btn" style="text-decoration:none;">&times;</a>
+                    <h2>Supprimer Employé</h2>
+                    <a href="{{ route('admin.employes.index', request()->except(['delete'])) }}" class="close-modal-btn">&times;</a>
                 </div>
 
                 <div class="modal-body">
                     <p style="font-size:14px; color:#35527c; line-height:1.6;">
-                        Voulez-vous vraiment supprimer l’utilisateur
-                        <strong>{{ $selectedUser->name }}</strong> ?
+                        Voulez-vous vraiment supprimer l’employé
+                        <strong>{{ $selectedEmploye->nom }} {{ $selectedEmploye->prenom }}</strong> ?
                     </p>
 
                     <div class="modal-actions">
-                        <a href="{{ route('admin.utilisateurs.index', request()->except(['delete'])) }}" class="btn-secondary" style="text-decoration:none;">Annuler</a>
+                        <a href="{{ route('admin.employes.index', request()->except(['delete'])) }}" class="btn-secondary">
+                            Annuler
+                        </a>
 
-                        <form method="POST" action="{{ route('admin.utilisateurs.destroy', $selectedUser->id) }}">
+                        <form method="POST" action="{{ route('admin.employes.destroy', $selectedEmploye->id) }}">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn-primary">Supprimer</button>
+                            <button type="submit" class="btn-primary">
+                                Supprimer
+                            </button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     @endif
-<script>
+
+    @php
+        $shouldOpenCreateModal = $errors->any()
+            && !request()->has('edit')
+            && !request()->has('view')
+            && !request()->has('delete');
+    @endphp
+
+      <script>
         document.addEventListener('DOMContentLoaded', function () {
             const pageWrap = document.getElementById('pageWrap');
             const sidebarToggle = document.getElementById('sidebarToggle');
@@ -1365,9 +1342,11 @@
                 }
             });
 
-            @if($errors->any() && !request()->has('edit') && !request()->has('view') && !request()->has('delete'))
-                createModal?.classList.add('show');
-            @endif
+            const shouldOpenCreateModal = {{ $shouldOpenCreateModal ? 'true' : 'false' }};
+
+            if (shouldOpenCreateModal && createModal) {
+                createModal.classList.add('show');
+            }
         });
     </script>
 </body>
