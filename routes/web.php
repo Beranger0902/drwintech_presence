@@ -3,6 +3,7 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DemandeCongeController;
+use App\Http\Controllers\Admin\PermissionController as AdminPermissionController;
 use App\Http\Controllers\Admin\EmployeController;
 use App\Http\Controllers\Admin\StatistiqueController as AdminStatistiqueController;
 use App\Http\Controllers\Admin\UserController;
@@ -51,11 +52,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/demandes/conges', [DemandeCongeController::class, 'index'])->name('demandes.conges.index');
         Route::patch('/demandes/conges/{demande}/approuver', [DemandeCongeController::class, 'approuver'])->name('demandes.conges.approuver');
         Route::patch('/demandes/conges/{demande}/refuser', [DemandeCongeController::class, 'refuser'])->name('demandes.conges.refuser');
+        Route::get('/demandes/permissions', [AdminPermissionController::class, 'index'])->name('demandes.permissions.index');
+        Route::patch('/demandes/permissions/{demande}/approve', [AdminPermissionController::class, 'approve'])->name('demandes.permissions.approve');
+        Route::patch('/demandes/permissions/{demande}/refuse', [AdminPermissionController::class, 'refuse'])->name('demandes.permissions.refuse');
         Route::get('/statistiques', [AdminStatistiqueController::class, 'index'])->name('statistiques.index');
     });
 
     // AGENT D'ACCUEIL
-    Route::prefix('agent')->name('agent.')->middleware('role:agent_accueil')->group(function () {
+        Route::prefix('agent')->name('agent.')->middleware('role:agent_accueil')->group(function () {
         Route::view('/dashboard', 'agent.dashboard')->name('dashboard');
 
         Route::get('/presences', [PresenceController::class, 'index'])->name('presences.index');

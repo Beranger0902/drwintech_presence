@@ -767,7 +767,7 @@
                         <a href="{{ route('admin.demandes.conges.index') }}" class="active">
                             <span class="menu-text">Congé</span>
                         </a>
-                        <a href="#">
+                        <a href="{{ route('admin.demandes.permissions.index') }}">
                             <span class="menu-text">Permission</span>
                         </a>
                     </div>
@@ -837,7 +837,7 @@
                         <div class="summary-value">{{ $totalConges }}</div>
                     </div>
                 </div>
-<div class="summary-card summary-card-yellow">
+                <div class="summary-card summary-card-yellow">
                     <div class="summary-icon summary-yellow">
                         <svg viewBox="0 0 24 24">
                             <path d="M12 7V12L15 15"></path>
@@ -953,7 +953,7 @@
                                     </td>
                                 </tr>
                             @empty
-                    <tr>
+                                <tr>
                                     <td colspan="7">Aucune demande de congé trouvée.</td>
                                 </tr>
                             @endforelse

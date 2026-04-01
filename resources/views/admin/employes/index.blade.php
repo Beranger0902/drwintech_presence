@@ -772,7 +772,7 @@
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
                             <path d="M3 10.5L12 3L21 10.5"></path>
-<path d="M5 9.5V21H19V9.5"></path>
+                            <path d="M5 9.5V21H19V9.5"></path>
                         </svg>
                     </span>
                     <span class="menu-text">Tableau de bord</span>

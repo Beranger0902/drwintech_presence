@@ -1,0 +1,109 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Demande;
+use Illuminate\Http\Request;
+
+class PermissionController extends Controller
+{
+    public function index(Request $request)
+    {
+        // Récupérer l'employé connecté
+        $admin = $request->user();
+
+        $query = Demande::with(['employe.user', 'permission'])
+            ->where('type_demande', 'permission');
+
+        if ($request->filled('statut')) {
+            $query->where('statut', $request->statut);
+        }
+
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('employe', function ($sub) use ($search) {
+                    $sub->where('nom', 'like', "%{$search}%")
+                        ->orWhere('prenom', 'like', "%{$search}%")
+                        ->orWhere('matricule', 'like', "%{$search}%");
+                })->orWhereHas('employe.user', function ($sub) use ($search) {
+                    $sub->where('email', 'like', "%{$search}%");
+                })->orWhere('observation', 'like', "%{$search}%");
+            });
+        }
+
+        $permissions = $query
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        $totalPermissions = Demande::where('type_demande', 'permission')->count();
+        $permissionsEnAttente = Demande::where('type_demande', 'permission')
+            ->where('statut', 'en_attente')
+            ->count();
+        $permissionsApprouvees = Demande::where('type_demande', 'permission')
+            ->where('statut', 'approuve')
+            ->count();
+        $permissionsRefusees = Demande::where('type_demande', 'permission')
+            ->where('statut', 'refuse')
+            ->count();
+
+        $selectedPermission = null;
+        $openModal = null;
+
+        if ($request->filled('view')) {
+            $selectedPermission = Demande::with(['employe.user', 'permission'])
+                ->where('type_demande', 'permission')
+                ->find($request->view);
+
+            $openModal = $selectedPermission ? 'view' : null;
+        }
+
+        return view('admin.demandes.permissions.index', compact(
+            'admin',
+            'permissions',
+            'totalPermissions',
+            'permissionsEnAttente',
+            'permissionsApprouvees',
+            'permissionsRefusees',
+            'selectedPermission',
+            'openModal'
+        ));
+    }
+
+    // Méthodes pour approuver ou refuser une demande de permission
+
+    public function approve(Demande $demande)
+    {
+        if ($demande->type_demande !== 'permission') {
+            abort(404);
+        }
+
+        $demande->update([
+            'statut' => 'approuve',
+        ]);
+
+        return redirect()
+            ->route('admin.demandes.permissions.index')
+            ->with('success', 'La demande de permission a été approuvée avec succès.');
+    }
+
+
+    // Méthode pour refuser une demande de permission
+    public function refuse(Demande $demande)
+    {
+        if ($demande->type_demande !== 'permission') {
+            abort(404);
+        }
+
+        $demande->update([
+            'statut' => 'refuse',
+        ]);
+
+        return redirect()
+            ->route('admin.demandes.permissions.index')
+            ->with('success', 'La demande de permission a été refusée.');
+    }
+}

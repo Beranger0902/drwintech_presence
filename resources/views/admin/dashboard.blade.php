@@ -805,7 +805,7 @@
                         <a href="{{ route('admin.demandes.conges.index') }}">
                             <span class="menu-text">Congé</span>
                         </a>
-                        <a href="#">
+                        <a href="{{ route('admin.demandes.permissions.index') }}">
                             <span class="menu-text">Permission</span>
                         </a>
                     </div>
