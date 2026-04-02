@@ -703,11 +703,13 @@
     }
 </script>
     <body>
-        <div class="page-wrap" id="pageWrap">
+    
+       <div class="page-wrap" id="pageWrap">
             <div class="sidebar-top">
                 <img src="{{ asset('Images/drwintech-logo.jpeg') }}" alt="DrwinTech" class="company-logo">
             </div>
 
+            
             <div class="topbar">
                 <div class="welcome-title">Bienvenue, {{ $employe?->prenom ?? 'Jean' }} {{ $employe?->nom ?? 'Dupont' }}!</div>
 
@@ -733,7 +735,8 @@
                     </div>
                 </div>
             </div>
-
+            
+            
             <aside class="sidebar">
                 <div class="sidebar-controls">
                     <button type="button" class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Ouvrir ou fermer le menu">
@@ -822,6 +825,7 @@
                             <div class="card-title">État de la journée</div>
                             <div class="card-divider"></div>
 
+                    
                             <div class="day-state">
                                 <div class="day-hours">
                                     <p>Heure d'arrivée : <strong>{{ $presenceDuJour?->heure_arrivee ?? '--:--' }}</strong></p>
@@ -836,6 +840,7 @@
                                     </a>
                                 </div>
 
+                       
                                 <div class="map-box">
                                     <iframe
                                         width="100%"
@@ -849,7 +854,7 @@
                                 </div>
                             </div>
                         </div>
-
+                       
                         <div class="card history-card">
                             <div class="card-title">Historique des pointages</div>
                             <div class="card-divider"></div>
@@ -860,7 +865,7 @@
                                         <div><strong>{{ \Carbon\Carbon::parse($presence->date_presence)->format('d/m/Y') }}</strong></div>
                                         <div><strong>{{ $presence->heure_arrivee ?? '--:--' }} - {{ $presence->heure_depart ?? '--:--' }}</strong></div>
                                       
-                                      
+
                                             @php
                                                 $statut = strtolower($presence->statut_pointage ?? 'absent');
 
@@ -902,6 +907,8 @@
                         </div>
                     </div>
 
+                    
+
                     <div class="right-column">
                         <div class="card">
                             <div class="card-title">Résumé du temps de travail</div>
@@ -930,7 +937,8 @@
                             </div>
                         </div>
 
-                        <div class="card waiting-card">
+                        
+                      <div class="card waiting-card">
                             <div class="card-title">Demandes en attente</div>
                             <div class="card-divider"></div>
 
@@ -951,6 +959,7 @@
                             </div>
                         </div>
 
+                        
                         <div class="card stats-card">
                             <div class="card-title">Mes statistiques</div>
                             <div class="card-divider"></div>
@@ -964,7 +973,7 @@
 
                                 $premierJourSemaine = $debutMois->dayOfWeekIso; // 1=lundi ... 7=dimanche
                                 $casesVidesAvant = $premierJourSemaine - 1;
-                                $nombreJours = $finMois->day;
+                                $nombreJours = $finMois->day; 
 
                                 $labelsSemaine = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
                                 $moisFrancais = [
@@ -976,8 +985,8 @@
                                 $maxHeures = max($heuresSemaine ?: [1]);
                                 $maxHeures = $maxHeures > 0 ? $maxHeures : 1;
                             @endphp
-
-                            <div class="stats-card-body">
+                        
+                           <div class="stats-card-body">
                                 <div class="mini-stat-box">
                                     <div class="mini-stat-title">Heures de la semaine</div>
 
@@ -995,6 +1004,7 @@
                                     </div>
                                 </div>
 
+
                                 <div class="mini-stat-box">
                                     <div class="mini-stat-title">
                                         {{ $moisFrancais[$maintenant->month] }} {{ $maintenant->year }}
@@ -1008,12 +1018,14 @@
                                         <div class="calendar-header">V</div>
                                         <div class="calendar-header">S</div>
                                         <div class="calendar-header">D</div>
-
-                                        @for ($i = 1; $i <= $casesVidesAvant; $i++)
+                                
+                                     @for ($i = 1; $i <= $casesVidesAvant; $i++)
                                             <div class="calendar-day empty"></div>
                                         @endfor
 
                                         @for ($jour = 1; $jour <= $nombreJours; $jour++)
+
+                                        
                                             @php
                                                 $dateCourante = Carbon::create($maintenant->year, $maintenant->month, $jour);
                                                 $estAujourdhui = $dateCourante->isToday();
@@ -1030,6 +1042,8 @@
                                         Aujourd’hui : {{ $maintenant->format('d/m/Y') }}
                                     </div>
                                 </div>
+
+
                             
                                 <div class="mini-stat-box">
                                     <div class="mini-stat-title">Statuts du mois</div>
@@ -1062,13 +1076,18 @@
         </div>
 
             <script>
+            // Script pour gérer l'ouverture et la fermeture de la barre latérale et du menu utilisateur, ainsi que pour fermer le menu utilisateur lorsque l'utilisateur clique en dehors de celui-ci
                 function toggleSidebar() {
                     document.getElementById('pageWrap').classList.toggle('sidebar-collapsed');
                 }
 
+                // Fonction pour basculer l'affichage du menu utilisateur dans la barre supérieure
+
                 function toggleUserMenu() {
                     document.getElementById('topUserMenu').classList.toggle('show');
                 }
+
+                // Ferme le menu utilisateur si l'utilisateur clique en dehors de celui-ci
 
                 window.addEventListener('click', function (e) {
                     const dropdown = document.getElementById('topUserDropdown');

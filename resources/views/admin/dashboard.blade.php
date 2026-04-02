@@ -714,11 +714,14 @@
     </style>
 </head>
 <body>
+
+  
     <div class="page-wrap" id="pageWrap">
         <div class="sidebar-top">
             <img src="{{ asset('Images/drwintech-logo.jpeg') }}" alt="DrwinTech" class="company-logo">
         </div>
 
+    
         <div class="topbar">
             <div class="welcome-title">
                 Bienvenue, {{ $admin->name ?? 'Administrateur' }}
@@ -811,7 +814,7 @@
                     </div>
                 </div>
 
-                <a href="#">
+                <a href="{{ route('admin.statistiques.index') }}">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
                             <path d="M4 19V11"></path>
@@ -824,6 +827,7 @@
                 </a>
             </nav>
         </aside>
+
 
         <main class="content">
             <div class="content-header">
@@ -894,7 +898,10 @@
                 </div>
             </div>
 
+
             <div class="middle-grid">
+
+        
                 <div class="card">
                     <div class="card-title">Activités récentes</div>
                     <div class="card-divider"></div>
@@ -934,6 +941,7 @@
                     </div>
                 </div>
 
+        
                 <div class="card">
                     <div class="card-title">Demandes récentes</div>
                     <div class="card-divider"></div>

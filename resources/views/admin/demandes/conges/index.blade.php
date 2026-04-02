@@ -773,7 +773,7 @@
                     </div>
                 </div>
 
-                <a href="#">
+                <a href="{{ route('admin.statistiques.index') }}">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
                             <path d="M4 19V11"></path>

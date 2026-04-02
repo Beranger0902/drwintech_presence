@@ -35,6 +35,7 @@ class DemandeCongeController extends Controller
             });
         }
 
+        // Récupération des demandes de congé avec pagination, triées par date de creation décroissante, et en conservant les paramètres de requête pour la pagination.
         $conges = $query
             ->latest()
             ->paginate(10)
@@ -48,6 +49,8 @@ class DemandeCongeController extends Controller
         $selectedConge = null;
         $openModal = null;
 
+        // Si une demande de congé spécifique est sélectionnée pour être affichée (indiquée par le paramètre "view" dans la requête),
+        // elle est récupérée avec ses relations employé et congé, et une variable est définie pour indiquer que le modal de visualisation doit être ouvert.
         if ($request->filled('view')) {
             $selectedConge = Demande::with(['employe.user', 'conge'])->where('type_demande', 'conge')->find($request->view);
             $openModal = $selectedConge ? 'view' : null;

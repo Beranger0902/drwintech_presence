@@ -20,6 +20,7 @@ class PermissionController extends Controller
             $query->where('statut', $request->statut);
         }
 
+        // Si une recherche est effectuée, filtrer les demandes de permission en fonction des champs de l'employé (nom, prénom, matricule), de l'email de l'utilisateur associé, ou de l'observation de la demande.
         if ($request->filled('search')) {
             $search = trim($request->search);
 
@@ -34,11 +35,15 @@ class PermissionController extends Controller
             });
         }
 
+
+        // Récupération des demandes de permission avec pagination, triées par date de creation décroissante, et en conservant les paramètres de requête pour la pagination.
+
         $permissions = $query
             ->latest()
             ->paginate(10)
             ->withQueryString();
 
+            // Calcul des statistiques pour les demandes de permission : total, en attente, approuvées, refusées.
         $totalPermissions = Demande::where('type_demande', 'permission')->count();
         $permissionsEnAttente = Demande::where('type_demande', 'permission')
             ->where('statut', 'en_attente')
@@ -52,6 +57,8 @@ class PermissionController extends Controller
 
         $selectedPermission = null;
         $openModal = null;
+
+            // Si une demande de permission spécifique est sélectionnée pour être affichée (indiquée par le paramètre "view" dans la requête),
 
         if ($request->filled('view')) {
             $selectedPermission = Demande::with(['employe.user', 'permission'])

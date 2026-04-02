@@ -653,6 +653,7 @@
     </style>
 </head>
 <body>
+
     <div class="page-wrap" id="pageWrap">
         <div class="sidebar-top">
             <img src="{{ asset('Images/drwintech-logo.jpeg') }}" alt="DrwinTech" class="company-logo">
@@ -661,7 +662,7 @@
         <div class="topbar">
             <div class="welcome-title"></div>
 
-            <div class="top-user-dropdown" id="topUserDropdown">
+           <div class="top-user-dropdown" id="topUserDropdown">
                 <button type="button" class="top-user-btn" id="topUserBtn">
                     <img src="https://ui-avatars.com/api/?name={{ urlencode(($employe?->prenom ?? 'Jean').' '.($employe?->nom ?? 'Dupont')) }}&background=ffffff&color=2d6fe0&size=120" alt="Profil">
                     <div class="top-user-info">
@@ -681,7 +682,7 @@
             </div>
         </div>
 
-        <aside class="sidebar">
+      <aside class="sidebar">
             <div class="sidebar-controls">
                 <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-label="Ouvrir ou fermer le menu">
                     <svg viewBox="0 0 24 24">
@@ -691,7 +692,7 @@
                     </svg>
                 </button>
             </div>
-
+        
             <nav class="menu">
                 <a href="{{ route('employe.dashboard') }}" class="{{ request()->routeIs('employe.dashboard') ? 'active' : '' }}">
                     <span class="menu-icon">
@@ -761,6 +762,7 @@
             </nav>
         </aside>
 
+       
         <main class="content">
             <div class="content-page-header">
                 <div class="page-title-row">

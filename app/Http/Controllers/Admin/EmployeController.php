@@ -111,6 +111,9 @@ class EmployeController extends Controller
 
         $user = User::where('email', $validated['email'])->first();
 
+
+        // Véfication que l'email correspon à un utilisateur existant et que cet utlisateur n'est pas déjà enrégistré comme employé. 
+        // Si l'une de ces conditions n'est pas remplie, une redirection est effectuée vers la liste des employés avec les messages d'erreur appropriés.
         if (! $user) {
             return redirect()
                 ->route('admin.employes.index')
@@ -120,12 +123,15 @@ class EmployeController extends Controller
 
         $employeExistant = Employe::where('user_id', $user->id)->first();
 
+
         if ($employeExistant) {
             return redirect()
                 ->route('admin.employes.index')
                 ->withErrors(['email' => 'Cet utilisateur est déjà enregistré comme employé.'])
                 ->withInput();
         }
+
+        // Création d'un nouvel enregistrement dans la table des employées avec les données validées.
 
         Employe::create([
             'user_id' => $user->id,
@@ -219,6 +225,8 @@ class EmployeController extends Controller
         if ($demandeConge) {
             return 'En congé';
         }
+
+        // Vérification des demandes de permission approuvées pour la date actuelle
 
         $demandePermission = Demande::with('permission')
             ->where('employe_id', $employe->id)

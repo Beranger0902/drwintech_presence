@@ -28,6 +28,8 @@ class DashboardController extends Controller
             return;
         }
 
+        // Récupérer l'heure de fin de travail à partir de la configuration et créer un objet Carbon pour l'heure limite d'enregistrement de l'absence
+
         $heureFin = config('pointage.heure_fin', '18:30');
         [$heure, $minute] = explode(':', $heureFin);
 
@@ -67,6 +69,7 @@ class DashboardController extends Controller
         }
 
 
+        // Si l'employé est marqué comme absent mais qu'il a une permission active pour aujourd'hui, on peut considérer que son absence est justifiée.
         if ($statut === 'absent' && $demandePermission && $demandePermission->permission) {
             $permission = $demandePermission->permission;
 
@@ -125,6 +128,9 @@ class DashboardController extends Controller
     // Cette méthode est responsable de l'affichage du tableau de bord de l'employé. 
     // Elle récupère les données nécessaires pour afficher les informations de présence, les statistiques et les demandes en attente.
     // Tout d'abord, elle appelle la méthode "creerAbsenceAutomatiqueSiNecessaire" pour s'assurer que les absences sont correctement enregistrées.
+    // Ensuite, elle récupère la présence du jour, l'historique récent des présences, les heures travaillées pour la semaine et le mois en cours, ainsi que les jours travaillés du mois.
+    // Elle calcule également les statistiques telles que le nombre de congés en attente, de permissions en attente, de jours présents, de retards, d'absences et d'absences justifiées pour le mois en cours.
+    // Enfin, elle retourne la vue du tableau de bord de l'employé en passant toutes les données nécessaires à l'affichage.
     public function index(Request $request)
     {
         $employe = $request->user()->employe;
