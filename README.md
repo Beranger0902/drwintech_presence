@@ -1,59 +1,118 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# DrWinTech Presence - Mémoire du Projet
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Vue d'ensemble
+Système de gestion de présence employés avec 3 rôles: Admin, Agent d'accueil, Employé
 
-## About Laravel
+## Stack Technique
+- **Backend**: Laravel 12, PHP 8.2+, MySQL
+- **Frontend**: Vite, Tailwind CSS, Alpine.js, Axios, HTML, CSS, JavaScript
+- **Auth**: Laravel Breeze
+- **Tests**: PHPUnit
+- **Linting**: Laravel Pint
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Architecture - Rôles
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. **Administrateur** (admin)
+   - Dashboard global
+   - Gérer utilisateurs et employés
+   - Approuver/refuser demandes de congés et permissions
+   - Débloquer employés après 3 refus (bouton dédié orange)
+   - Voir statistiques
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+2. **Agent d'accueil** (agent_accueil)
+   - Dashboard
+   - Voir la présences d'aujourd'hui
+   - Voir temps de travail
+   - Consulter rapports
+   - Statistiques
 
-## Learning Laravel
+3. **Employé** (employe)
+   - Dashboard personnel (calendrier avec week-end/fériés marqués)
+   - Pointage arrivée/départ (avec GPS, détecte retard si après 08:30)
+   - Historique des pointages (calcul heures supplémentaires automatique)
+   - Demandes de congés (blocage après 3 refus + vérif chevauchement)
+   - Demandes de permissions (blocage après 3 refus + vérif chevauchement)
+   - Temps de travail
+   - Auto-marquage absence après 20h si pas de départ
+   - Auto-création présence pour cas spéciaux (week-end, fériés, congé, permission)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Modèles de Données
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **User**: Authentification (id, email, password, role, actif)
+- **Employe**: (matricule, nom, prenom, poste, département, date_embauche, refusals_count, demandes_bloquees)
+- **Presence**: (employe_id, date, heure_arrivée/départ, GPS, duree, statut_arrivee, duree_normale, heures_supplementaires)
+- **Demande**: (employe_id, type_demande, statut, observation)
+- **Conge**: (demande_id, date_debut, date_fin, type_conge, piece_jointe)
+- **Permission**: (demande_id, date_permission, heure_debut, heure_fin, duree)
+- **JourFerie**: (date, nom, année)
 
-## Laravel Sponsors
+## Contrôleurs
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```
+Admin/*:
+  - DemandeCongeController: approuver, refuser, debloquer
+  - PermissionController: approve, refuse, debloquer
+  - Autres: Dashboard, Users, Employe, Statistique
 
-### Premium Partners
+Agent/*: Presence, Rapport, Statistique, TempsTravail
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Employe/*:
+  - PointageController: arrivée/départ, checks chevauchement + blocage
+  - CongeController: store with checks chevauchement + blocage
+  - PermissionController: store with checks chevauchement + blocage
+  - Autres: Dashboard, Historique, TempsTravail
+```
 
-## Contributing
+## Routes Principales
+- `/dashboard` → Redirige selon rôle
+- `/admin/*` → Admin endpoints (inclus debloquer conges & permissions)
+- `/agent/*` → Agent d'accueil endpoints
+- `/employe/*` → Employé endpoints
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Système de Blocage de Demandes ✅ (IMPLÉMENTÉ)
+- Après 3 refus consécutifs (congé OU permission) → employe.demandes_bloquees = true
+- Blocage actif: Employé ne peut pas soumettre si:
+  - demandes_bloquees = true (bouton UI désactivé, grisé)
+  - Ou si demande active/chevauchante existe (statut: en_attente, approuver, approuve)
+- Admin peut débloquer (bouton orange ♫) → refusals_count = 0, demandes_bloquees = false
+- Approuver une demande réinitialise automatiquement les compteurs
+- Routes: `/admin/demandes/conges/{id}/debloquer` & `/admin/demandes/permissions/{id}/debloquer`
 
-## Code of Conduct
+## Bugs/Notes Corrigés
+- User.php: "boll" → "bool" (3 méthodes: isAdmin, isAgentAccueil, isEmplye) ✅
+- Presence.php: "belongTo" → "belongsTo" ✅
+- Time Bug: Carbon::createFromFormat(...) sans date → 1970. Fix: now()->copy()->setTimeFromTimeString() ✅
+- Apostrophes: Smart quotes cause parser errors. Fix: Use double quotes (") not escaping single quotes ✅
+- statut_arrivee: Champ séparé pour tracker statut arrivée indépendament du statut final ✅
+- refusals_count & demandes_bloquees: Tracking consecutive refusals and blocking state ✅
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Fichiers clés
+```
+routes/web.php (avec debloquer routes)
+app/Models/* (User, Employe, Presence, Demande, Conge, Permission, JourFerie)
+app/Http/Controllers/Admin/DemandeCongeController.php (approuver, refuser, debloquer)
+app/Http/Controllers/Admin/PermissionController.php (approve, refuse, debloquer)
+app/Http/Controllers/Employe/PointageController.php (arrivée/départ avec checks)
+app/Http/Controllers/Employe/CongeController.php (store avec blocage)
+app/Http/Controllers/Employe/PermissionController.php (store avec blocage)
+app/Http/Controllers/Employe/DashboardController.php (stats)
+database/migrations/* (13 migrations + 2 nouvelles)
+resources/views/employe/demandes/conges/index.blade.php (UI bloquée si demandes_bloquees)
+resources/views/employe/demandes/permissions/index.blade.php (UI bloquée si demandes_bloquees)
+resources/views/admin/demandes/conges/index.blade.php (bouton débloquer)
+resources/views/admin/demandes/permissions/index.blade.php (bouton débloquer)
+```
 
-## Security Vulnerabilities
+## Git
+- Repo git initialisé
+- Migrations: 2026_03_31_142450 (dernière init) + 2 nouvelles pour statut_arrivee & request tracking
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## État Actuel ✅
+- Pointage complet (GPS, temps, statuts retard/présence/absent)
+- Demandes avec blocage 3-strike + vérif chevauchement
+- UI employé bloquée quand demandes_bloquees = true
+- Admin peut débloquer avec bouton orange dédié
+- Auto-création présence pour cas spéciaux
+- Dashboard calendrier avec marquage fériés/week-end
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**À migrer**: `php artisan migrate` (ajoute statut_arrivee, refusals_count, demandes_bloquees)
