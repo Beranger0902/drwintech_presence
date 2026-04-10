@@ -646,7 +646,10 @@
             <div class="content-page-header">
                 <div class="page-title-row">
                     <h1>Mes demandes de permission</h1>
-                    <button type="button" class="add-btn" id="openPermissionModal">Faire une demande</button>
+                    <button type="button" class="add-btn" id="openPermissionModal"
+                        @if($employe->demandes_bloquees) disabled style="opacity: 0.6; cursor: not-allowed;" title="Vos demandes sont bloquées. Contactez l'administrateur." @endif>
+                        Faire une demande
+                    </button>
                 </div>
 
                 <div class="page-breadcrumb-row">
@@ -805,7 +808,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (openPermissionModal) {
                 openPermissionModal.addEventListener('click', function () {
-                    permissionModal.classList.add('show');
+                    if (!openPermissionModal.disabled) {
+                        permissionModal.classList.add('show');
+                    }
                 });
             }
 

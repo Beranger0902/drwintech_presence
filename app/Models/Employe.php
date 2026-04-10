@@ -18,6 +18,8 @@ class Employe extends Model
         'date_embauche',
         'statut',
         'user_id',
+        'refusals_count',
+        'demandes_bloquees',
     ];
 
     public function user()

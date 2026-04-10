@@ -949,6 +949,19 @@
                                                     </svg>
                                                 </button>
                                             </form>
+
+                                            @if ($congeDemande->employe->refusals_count >= 3)
+                                                <form method="POST" action="{{ route('admin.demandes.conges.debloquer', $congeDemande->id) }}">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="action-btn" style="background: #ff9800; color: white;" title="Débloquer l'employé">
+                                                        <svg viewBox="0 0 24 24" style="stroke: white;">
+                                                            <path d="M3 10h10v8H3z"></path>
+                                                            <path d="M13 5v5"></path>
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

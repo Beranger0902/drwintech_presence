@@ -81,6 +81,12 @@ class DemandeCongeController extends Controller
             'statut' => 'approuver',
         ]);
 
+        // Réinitialiser le compteur de refus et débloquer l'employé
+        $demande->employe->update([
+            'refusals_count' => 0,
+            'demandes_bloquees' => false,
+        ]);
+
         return redirect()
             ->route('admin.demandes.conges.index')
             ->with('success', 'La demande de congé a été approuvée avec succès.');
@@ -99,8 +105,36 @@ class DemandeCongeController extends Controller
             'statut' => 'refuser',
         ]);
 
+        // Incrémenter le compteur de refus
+        $employe = $demande->employe;
+        $employe->refusals_count++;
+
+        // Bloquer après 3 refus
+        if ($employe->refusals_count >= 3) {
+            $employe->demandes_bloquees = true;
+        }
+
+        $employe->save();
+
         return redirect()
             ->route('admin.demandes.conges.index')
             ->with('success', 'La demande de congé a été refusée.');
+    }
+
+    public function debloquer(Demande $demande)
+    {
+        if ($demande->type_demande !== 'conge') {
+            abort(404);
+        }
+
+        // Réinitialiser le compteur de refus et débloquer l'employé
+        $demande->employe->update([
+            'refusals_count' => 0,
+            'demandes_bloquees' => false,
+        ]);
+
+        return redirect()
+            ->route('admin.demandes.conges.index')
+            ->with('success', "L'employé a été débloqué avec succès.");
     }
 }

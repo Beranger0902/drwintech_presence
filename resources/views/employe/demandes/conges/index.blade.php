@@ -677,7 +677,10 @@
             <div class="content-page-header">
                 <div class="page-title-row">
                     <h1>Mes demandes de congé</h1>
-                    <button type="button" class="add-btn" id="openCongeModal">Faire une demande</button>
+                    <button type="button" class="add-btn" id="openCongeModal"
+                        @if($employe->demandes_bloquees) disabled style="opacity: 0.6; cursor: not-allowed;" title="Vos demandes sont bloquées. Contactez l'administrateur." @endif>
+                        Faire une demande
+                    </button>
                 </div>
 
                 <div class="page-breadcrumb-row">
@@ -866,7 +869,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (openCongeModal) {
                 openCongeModal.addEventListener('click', function () {
-                    congeModal.classList.add('show');
+                    if (!openCongeModal.disabled) {
+                        congeModal.classList.add('show');
+                    }
                 });
             }
 

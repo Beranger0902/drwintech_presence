@@ -52,9 +52,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/demandes/conges', [DemandeCongeController::class, 'index'])->name('demandes.conges.index');
         Route::patch('/demandes/conges/{demande}/approuver', [DemandeCongeController::class, 'approuver'])->name('demandes.conges.approuver');
         Route::patch('/demandes/conges/{demande}/refuser', [DemandeCongeController::class, 'refuser'])->name('demandes.conges.refuser');
+        Route::patch('/demandes/conges/{demande}/debloquer', [DemandeCongeController::class, 'debloquer'])->name('demandes.conges.debloquer');
         Route::get('/demandes/permissions', [AdminPermissionController::class, 'index'])->name('demandes.permissions.index');
         Route::patch('/demandes/permissions/{demande}/approve', [AdminPermissionController::class, 'approve'])->name('demandes.permissions.approve');
         Route::patch('/demandes/permissions/{demande}/refuse', [AdminPermissionController::class, 'refuse'])->name('demandes.permissions.refuse');
+        Route::patch('/demandes/permissions/{demande}/debloquer', [AdminPermissionController::class, 'debloquer'])->name('demandes.permissions.debloquer');
         Route::get('/statistiques', [AdminStatistiqueController::class, 'index'])->name('statistiques.index');
     });
 
