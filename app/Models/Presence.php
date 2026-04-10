@@ -16,7 +16,10 @@ class Presence extends Model
             'latitude_depart',
             'longitude_depart',
             'statut_pointage',
+            'statut_arrivee',
             'duree_minutes',
+            'duree_normale',
+            'heures_supplementaires',
         ];
         protected function cast(): array
         {
@@ -26,6 +29,6 @@ class Presence extends Model
         }
         public function employe()
         {
-            return $this->belongTo(Employe::class);
+            return $this->belongsTo(Employe::class);
         }
 }

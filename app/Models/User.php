@@ -53,13 +53,13 @@ class User extends Authenticatable
         ];
     }
 
-    public function isAdmin(): boll {
+    public function isAdmin(): bool {
         return $this->role === self::ROLE_ADMIN;
     }
-    public function isAgentAccueil(): boll {
+    public function isAgentAccueil(): bool {
         return $this->role === self::ROLE_AGENT;
     }
-    public function isEmplye(): boll {
+    public function isEmploye(): bool {
         return $this->role === self::ROLE_EMPLOYE;
     }
 

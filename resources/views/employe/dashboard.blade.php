@@ -673,6 +673,28 @@
                 color: white;
             }
 
+            .calendar-day.weekend {
+                background: #f3f4f6;
+                color: #6b7280;
+                font-weight: bold;
+            }
+
+            .calendar-day.weekend.today {
+                background: #5b98ee;
+                color: white;
+            }
+
+            .calendar-day.holiday {
+                background: #fef3c7;
+                color: #d97706;
+                font-weight: bold;
+            }
+
+            .calendar-day.holiday.today {
+                background: #5b98ee;
+                color: white;
+            }
+
             .calendar-footer {
                 margin-top: 8px;
                 text-align: center;
@@ -1025,14 +1047,16 @@
 
                                         @for ($jour = 1; $jour <= $nombreJours; $jour++)
 
-                                        
+
                                             @php
                                                 $dateCourante = Carbon::create($maintenant->year, $maintenant->month, $jour);
                                                 $estAujourdhui = $dateCourante->isToday();
                                                 $estJourTravaille = in_array($jour, $joursTravaillesMois ?? []);
+                                                $estWeekend = $dateCourante->isSaturday() || $dateCourante->isSunday();
+                                                $estJourFerie = in_array($jour, $joursFeriesMois ?? []);
                                             @endphp
 
-                                            <div class="calendar-day {{ $estAujourdhui ? 'today' : '' }} {{ $estJourTravaille ? 'worked-day' : '' }}">
+                                            <div class="calendar-day {{ $estAujourdhui ? 'today' : '' }} {{ $estJourTravaille ? 'worked-day' : '' }} {{ $estWeekend ? 'weekend' : '' }} {{ $estJourFerie ? 'holiday' : '' }}">
                                                 {{ $jour }}
                                             </div>
                                         @endfor

@@ -11,8 +11,88 @@ use Illuminate\Support\Carbon;
 
 class DashboardController extends Controller
 {
-    // Cette méthode vérifie si l'employé a une présence pour aujourd'hui. 
-    // Si ce n'est pas le cas et que l'heure actuelle est passée après l'heure limite, 
+    // Crée une présence immédiatement si c'est un weekend, féié, congé ou permission couvrant toute la journée
+    private function creerPresenceCasSpecialSiNecessaire($employe): void
+    {
+        if (!$employe) {
+            return;
+        }
+
+        $presenceDuJour = Presence::where('employe_id', $employe->id)
+            ->whereDate('date_presence', today())
+            ->first();
+
+        // Si une présence existe déjà, ne rien faire
+        if ($presenceDuJour) {
+            return;
+        }
+
+        // Vérifier weekend
+        if ($this->estWeekend()) {
+            Presence::create([
+                'employe_id' => $employe->id,
+                'date_presence' => today(),
+                'statut_pointage' => 'weekend',
+            ]);
+            return;
+        }
+
+        // Vérifier jour férié
+        $jourFerie = $this->recupererJourFerieDuJour();
+        if ($jourFerie) {
+            Presence::create([
+                'employe_id' => $employe->id,
+                'date_presence' => today(),
+                'statut_pointage' => 'ferie',
+            ]);
+            return;
+        }
+
+        // Vérifier congé actif
+        $conge = $this->recupererCongeActif($employe);
+        if ($conge) {
+            Presence::create([
+                'employe_id' => $employe->id,
+                'date_presence' => today(),
+                'statut_pointage' => 'conge',
+            ]);
+            return;
+        }
+
+        // Vérifier permission approuvée couvrant toute la journée
+        $demandePermission = Demande::with('permission')
+            ->where('employe_id', $employe->id)
+            ->where('type_demande', 'permission')
+            ->where('statut', 'approuver')
+            ->get()
+            ->first(function ($demande) {
+                return $demande->permission
+                    && $demande->permission->date_permission
+                    && Carbon::parse($demande->permission->date_permission)->isToday();
+            });
+
+        if ($demandePermission && $demandePermission->permission) {
+            $permission = $demandePermission->permission;
+
+            $heureDebutTravail = config('pointage.heure_debut', '08:30');
+            $heureFinTravail = config('pointage.heure_fin', '18:30');
+
+            $permissionJourneeEntiere = $permission->heure_debut <= $heureDebutTravail
+                && $permission->heure_fin >= $heureFinTravail;
+
+            if ($permissionJourneeEntiere) {
+                Presence::create([
+                    'employe_id' => $employe->id,
+                    'date_presence' => today(),
+                    'statut_pointage' => 'absent_justifie',
+                ]);
+                return;
+            }
+        }
+    }
+
+    // Cette méthode vérifie si l'employé a une présence pour aujourd'hui.
+    // Si ce n'est pas le cas et que l'heure actuelle est passée après l'heure limite,
     // elle crée automatiquement une entrée de présence avec le statut "absent" ou un autre statut approprié (weekend, ferie, conge, absent_justifie) selon les conditions.
     private function creerAbsenceAutomatiqueSiNecessaire($employe): void
     {
@@ -23,6 +103,23 @@ class DashboardController extends Controller
         $presenceDuJour = Presence::where('employe_id', $employe->id)
             ->whereDate('date_presence', today())
             ->first();
+
+        // Cas 1: Si l'employé a pointé l'arrivée mais pas le départ, et on est après 20h, marquer comme absent
+        if ($presenceDuJour && $presenceDuJour->heure_arrivee && !$presenceDuJour->heure_depart) {
+            $heureMax = config('pointage.heure_max_depart');
+            [$heure, $minute] = explode(':', $heureMax);
+            $heureLimite = now()->copy()->setTime((int) $heure, (int) $minute, 0);
+
+            if (now()->greaterThan($heureLimite)) {
+                $presenceDuJour->update([
+                    'statut_pointage' => 'absent',
+                    'duree_minutes' => null,
+                    'duree_normale' => null,
+                    'heures_supplementaires' => null,
+                ]);
+            }
+            return;
+        }
 
         if ($presenceDuJour) {
             return;
@@ -134,6 +231,7 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $employe = $request->user()->employe;
+        $this->creerPresenceCasSpecialSiNecessaire($employe);
         $this->creerAbsenceAutomatiqueSiNecessaire($employe);
 
         $joursTravaillesMois = [];
@@ -201,13 +299,13 @@ class DashboardController extends Controller
         $nombrePresents = Presence::where('employe_id', $employe->id)
             ->whereMonth('date_presence', now()->month)
             ->whereYear('date_presence', now()->year)
-            ->whereIn('statut_pointage', ['present', 'termine'])
+            ->where('statut_arrivee', 'present')
             ->count();
 
         $nombreRetards = Presence::where('employe_id', $employe->id)
             ->whereMonth('date_presence', now()->month)
             ->whereYear('date_presence', now()->year)
-            ->where('statut_pointage', 'retard')
+            ->where('statut_arrivee', 'retard')
             ->count();
 
         $nombreAbsents = Presence::where('employe_id', $employe->id)
@@ -221,6 +319,15 @@ class DashboardController extends Controller
             ->whereYear('date_presence', now()->year)
             ->where('statut_pointage', 'absent_justifie')
             ->count();
+
+        // Récupérer les jours fériés du mois
+        $joursFeriesMois = JourFerie::whereMonth('date_ferie', now()->month)
+            ->whereYear('date_ferie', now()->year)
+            ->get()
+            ->map(function ($jourFerie) {
+                return Carbon::parse($jourFerie->date_ferie)->day;
+            })
+            ->toArray();
 
 
 
@@ -242,6 +349,7 @@ class DashboardController extends Controller
             'historiqueRecent',
             'heuresSemaine',
             'joursTravaillesMois',
+            'joursFeriesMois',
             'stats'
         ));
     }

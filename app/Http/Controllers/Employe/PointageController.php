@@ -15,8 +15,88 @@ use Illuminate\Http\Request;
 
 class PointageController extends Controller
 {
-    // Cette méthode vérifie si l'employé a une présence pour aujourd'hui. 
-    // Si ce n'est pas le cas et que l'heure actuelle est passée après l'heure limite, 
+    // Crée une présence immédiatement si c'est un weekend, féié, congé ou permission couvrant toute la journée
+    private function creerPresenceCasSpecialSiNecessaire($employe): void
+    {
+        if (!$employe) {
+            return;
+        }
+
+        $presenceDuJour = Presence::where('employe_id', $employe->id)
+            ->whereDate('date_presence', today())
+            ->first();
+
+        // Si une présence existe déjà, ne rien faire
+        if ($presenceDuJour) {
+            return;
+        }
+
+        // Vérifier weekend
+        if ($this->estWeekend()) {
+            Presence::create([
+                'employe_id' => $employe->id,
+                'date_presence' => today(),
+                'statut_pointage' => 'weekend',
+            ]);
+            return;
+        }
+
+        // Vérifier jour férié
+        $jourFerie = $this->recupererJourFerieDuJour();
+        if ($jourFerie) {
+            Presence::create([
+                'employe_id' => $employe->id,
+                'date_presence' => today(),
+                'statut_pointage' => 'ferie',
+            ]);
+            return;
+        }
+
+        // Vérifier congé actif
+        $conge = $this->recupererCongeActif($employe);
+        if ($conge) {
+            Presence::create([
+                'employe_id' => $employe->id,
+                'date_presence' => today(),
+                'statut_pointage' => 'conge',
+            ]);
+            return;
+        }
+
+        // Vérifier permission approuvée couvrant toute la journée
+        $demandePermission = Demande::with('permission')
+            ->where('employe_id', $employe->id)
+            ->where('type_demande', 'permission')
+            ->where('statut', 'approuver')
+            ->get()
+            ->first(function ($demande) {
+                return $demande->permission
+                    && $demande->permission->date_permission
+                    && Carbon::parse($demande->permission->date_permission)->isToday();
+            });
+
+        if ($demandePermission && $demandePermission->permission) {
+            $permission = $demandePermission->permission;
+
+            $heureDebutTravail = config('pointage.heure_debut', '08:30');
+            $heureFinTravail = config('pointage.heure_fin', '18:30');
+
+            $permissionJourneeEntiere = $permission->heure_debut <= $heureDebutTravail
+                && $permission->heure_fin >= $heureFinTravail;
+
+            if ($permissionJourneeEntiere) {
+                Presence::create([
+                    'employe_id' => $employe->id,
+                    'date_presence' => today(),
+                    'statut_pointage' => 'absent_justifie',
+                ]);
+                return;
+            }
+        }
+    }
+
+    // Cette méthode vérifie si l'employé a une présence pour aujourd'hui.
+    // Si ce n'est pas le cas et que l'heure actuelle est passée après l'heure limite,
     // elle crée automatiquement une entrée de présence avec le statut "absent" ou un autre statut approprié (weekend, ferie, conge, absent_justifie) selon les conditions.
         private function creerAbsenceSiNecessaire($employe): void
     {
@@ -28,11 +108,28 @@ class PointageController extends Controller
             ->whereDate('date_presence', today())
             ->first();
 
+        // Cas 1: Si l'employé a pointé l'arrivée mais pas le départ, et on est après 20h, marquer comme absent
+        if ($presenceDuJour && $presenceDuJour->heure_arrivee && !$presenceDuJour->heure_depart) {
+            $heureMax = config('pointage.heure_max_depart');
+            [$heure, $minute] = explode(':', $heureMax);
+            $heureLimite = now()->copy()->setTime((int) $heure, (int) $minute, 0);
+
+            if (now()->greaterThan($heureLimite)) {
+                $presenceDuJour->update([
+                    'statut_pointage' => 'absent',
+                    'duree_minutes' => null,
+                    'duree_normale' => null,
+                    'heures_supplementaires' => null,
+                ]);
+            }
+            return;
+        }
+
         if ($presenceDuJour) {
             return;
         }
 
-        $heureFin = config('pointage.heure_max_depart');
+        $heureFin = config('pointage.heure_fin');
         [$heure, $minute] = explode(':', $heureFin);
 
         $heureLimiteAbsence = now()->copy()->setTime((int) $heure, (int) $minute, 0);
@@ -143,6 +240,7 @@ class PointageController extends Controller
     public function index(Request $request)
     {
         $employe = $request->user()->employe;
+        $this->creerPresenceCasSpecialSiNecessaire($employe);
         $this->creerAbsenceSiNecessaire($employe);
         $presenceDuJour = null;
 
@@ -240,36 +338,44 @@ class PointageController extends Controller
         $employe = $request->user()->employe;
 
         if (! $employe) {
-            return $this->jsonResponse(false, 'Aucune fiche employé liée à cet utilisateur.', [], 422);
+            return $this->jsonResponse(false, 'Aucune fiche employe liee a cet utilisateur.', [], 422);
         }
 
-// Refuser lorsqu'il veut faire le pointage un weekend ou jours férie
+// Refuser lorsqu’il veut faire le pointage un weekend ou jours férie
 
         if ($this->estWeekend()) {
-            return $this->jsonResponse(false, 'Aujourd’hui est un week-end. Il n’y a pas de travail prévu.', [], 422);
+            return $this->jsonResponse(false, "Aujourd\’hui est un week-end. Aucun pointage n\’est attendu.", [], 422);
         }
 
         $service = new JourFerieService();
         $libelleFerie = $service->estFerie(today()->toDateString());
 
         if ($libelleFerie) {
-            return $this->jsonResponse(false, "Aujourd’hui est férié : $libelleFerie", [], 422);
+            return $this->jsonResponse(false, "Aujourd\’hui est ferie : $libelleFerie. Aucun pointage n\’est attendu.", [], 422);
         }
 
         $conge = $this->recupererCongeActif($employe);
 
-        // Refuser lorsqu'il est en congé ou il a une permission couvrant toute la journée
+        // Refuser lorsqu’il est en congé ou il a une permission couvrant toute la journée
 
         if ($conge) {
-            return $this->jsonResponse(false, 'Vous êtes actuellement en congé. Votre période de congé n’est pas terminée.', [], 422);
+            return $this->jsonResponse(false, "Vous etes actuellement en conge. Aucun pointage n\’est attendu.", [], 422);
         }
 
-  // 
+        // Vérifier permission approuvée couvrant toute la journée
+        $demandePermission = $this->recupererPermissionDuJour($employe);
+        $permission = $demandePermission?->permission;
+
+        if ($permission && $this->permissionCouvreTouteLaJournee($permission)) {
+            return $this->jsonResponse(false, "Vous avez une permission approuvee couvrant toute la journee. Aucun pointage n\’est attendu.", [], 422);
+        }
+
+  //
         $latitude = (float) $request->latitude;
         $longitude = (float) $request->longitude;
 
         if (! $geolocalisationService->positionAutorisee($latitude, $longitude)) {
-            return $this->jsonResponse(false, 'Pointage refusé : vous êtes hors de la zone autorisée.', [], 422);
+            return $this->jsonResponse(false, 'Pointage refuse : vous etes hors de la zone autorisee.', [], 422);
         }
 
         $presence = Presence::firstOrCreate(
@@ -280,23 +386,12 @@ class PointageController extends Controller
         );
 
         if ($presence->heure_arrivee) {
-            return $this->jsonResponse(false, 'Votre arrivée a déjà été pointée aujourd’hui.', [], 422);
+            return $this->jsonResponse(false, "Votre arrivee a deja ete pointee aujourd\’hui.", [], 422);
         }
 
         $maintenant = now();
 
-        $demandePermission = $this->recupererPermissionDuJour($employe);
-        $permission = $demandePermission?->permission;
-
-        if ($permission && $this->permissionCouvreTouteLaJournee($permission)) {
-            return $this->jsonResponse(false, 'Vous avez une permission couvrant toute la journée. Aucun pointage normal n’est attendu.', [], 422);
-        }
-
-      //  if ($permission && $this->heureDansPlagePermission($permission, $maintenant)) {
-        //    return $this->jsonResponse(false, 'Votre permission est encore en cours. Vous pourrez pointer après la fin de votre permission.', [], 422);
-        //}
-
-        $heure = $maintenant->format('H:i:s');
+        $heure = $maintenant->format("H:i:s");
         $statutArrivee = $this->determinerStatutArrivee($maintenant);
 
         $presence->update([
@@ -304,9 +399,10 @@ class PointageController extends Controller
             'latitude_arrivee' => $latitude,
             'longitude_arrivee' => $longitude,
             'statut_pointage' => $statutArrivee,
+            'statut_arrivee' => $statutArrivee,
         ]);
 
-        return $this->jsonResponse(true, 'Pointage d’arrivée enregistré avec succès.', [
+        return $this->jsonResponse(true, "Pointage d\’arrivee enregistre avec succes.", [
             'heure' => $heure,
             'type' => 'arrivee',
             'latitude' => $latitude,
@@ -327,13 +423,13 @@ class PointageController extends Controller
         $employe = $request->user()->employe;
 
         if (! $employe) {
-            return $this->jsonResponse(false, 'Aucune fiche employé liée à cet utilisateur.', [], 422);
+            return $this->jsonResponse(false, 'Aucune fiche employe liee a cet utilisateur.', [], 422);
         }
 
 
 
         if ($this->estWeekend()) {
-            return $this->jsonResponse(false, 'Aujourd’hui est un week-end. Il n’y a pas de travail prévu.', [], 422);
+            return $this->jsonResponse(false, "Aujourd\’hui est un week-end. Il n\’y a pas de travail prevu.", [], 422);
         }
 
 
@@ -341,7 +437,7 @@ class PointageController extends Controller
         $jourFerie = $this->recupererJourFerieDuJour();
 
         if ($jourFerie) {
-            return $this->jsonResponse(false, 'Aujourd’hui est un jour férié : ' . $jourFerie->libelle . '.', [], 422);
+            return $this->jsonResponse(false, "Aujourd\’hui est un jour ferie : " . $jourFerie->libelle . ".", [], 422);
         }
 
 
@@ -349,7 +445,7 @@ class PointageController extends Controller
         $conge = $this->recupererCongeActif($employe);
 
         if ($conge) {
-            return $this->jsonResponse(false, 'Vous êtes actuellement en congé. Votre période de congé n’est pas terminée.', [], 422);
+            return $this->jsonResponse(false, "Vous etes actuellement en conge. Votre periode de conge n\’est pas terminee.", [], 422);
         }
         
 
@@ -357,7 +453,7 @@ class PointageController extends Controller
         $longitude = (float) $request->longitude;
 
         if (! $geolocalisationService->positionAutorisee($latitude, $longitude)) {
-            return $this->jsonResponse(false, 'Pointage refusé : vous êtes hors de la zone autorisée.', [], 422);
+            return $this->jsonResponse(false, 'Pointage refuse : vous etes hors de la zone autorisee.', [], 422);
         }
 
         $presence = Presence::where('employe_id', $employe->id)
@@ -365,32 +461,32 @@ class PointageController extends Controller
             ->first();
 
         if (! $presence) {
-            return $this->jsonResponse(false, 'Aucune présence trouvée pour aujourd’hui.', [], 422);
+            return $this->jsonResponse(false, "Aucune presence trouvee pour aujourd\’hui.", [], 422);
         }
 
         // Refuser le pointage de départ si l'arrivée n'a pas été pointée ou si le départ a déjà été pointé
 
         if (! $presence->heure_arrivee) {
-            return $this->jsonResponse(false, 'Vous devez d’abord pointer votre arrivée.', [], 422);
+            return $this->jsonResponse(false, "Vous devez d\’abord pointer votre arrivee.", [], 422);
         }
 
         if ($presence->heure_depart) {
-            return $this->jsonResponse(false, 'Votre départ a déjà été pointé aujourd’hui.', [], 422);
+            return $this->jsonResponse(false, "Votre depart a deja ete pointe aujourd\’hui.", [], 422);
         }
 
         //Calculer du travail pour le départ
 
-        $heureArrivee = \Carbon\Carbon::createFromFormat('H:i:s', $presence->heure_arrivee);
+        $heureArrivee = now()->copy()->setTimeFromTimeString($presence->heure_arrivee);
         $heureDepart = now();
 
-        $heureFinTravail = \Carbon\Carbon::createFromFormat('H:i', config('pointage.heure_fin'));
-        $heureMaxDepart = \Carbon\Carbon::createFromFormat('H:i', config('pointage.heure_max_depart'));
+        $heureFinTravail = now()->copy()->setTimeFromTimeString(config('pointage.heure_fin'));
+        $heureMaxDepart = now()->copy()->setTimeFromTimeString(config('pointage.heure_max_depart'));
 
       
       /**Bloquer le calcule si c'est un jour ferié, weekend et congé */
 
         if (in_array($presence->statut_pointage, ['conge', 'ferie', 'weekend'])) {
-            return $this->jsonResponse(false, 'Cette journée ne permet pas de calculer un temps de travail.', [], 422);
+            return $this->jsonResponse(false, 'Cette journee ne permet pas de calculer un temps de travail.', [], 422);
         }
       
       
@@ -398,7 +494,7 @@ class PointageController extends Controller
          *  CAS BLOQUANT : après 20h → refus
          */
         if ($heureDepart->greaterThan($heureMaxDepart)) {
-            return $this->jsonResponse(false, 'Pointage refusé : vous avez dépassé l’heure limite de 20h.', [], 422);
+            return $this->jsonResponse(false, "Pointage refuse : vous avez depasse l\’heure limite de 20h.", [], 422);
         }
 
         /**
