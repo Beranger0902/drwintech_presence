@@ -478,6 +478,7 @@ class PointageController extends Controller
 
         $heureArrivee = now()->copy()->setTimeFromTimeString($presence->heure_arrivee);
         $heureDepart = now();
+        $heure = $heureDepart->format("H:i:s");
 
         $heureFinTravail = now()->copy()->setTimeFromTimeString(config('pointage.heure_fin'));
         $heureMaxDepart = now()->copy()->setTimeFromTimeString(config('pointage.heure_max_depart'));

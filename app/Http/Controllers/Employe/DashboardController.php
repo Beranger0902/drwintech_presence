@@ -113,6 +113,7 @@ class DashboardController extends Controller
             if (now()->greaterThan($heureLimite)) {
                 $presenceDuJour->update([
                     'statut_pointage' => 'absent',
+                    'statut_arrivee' => null,
                     'duree_minutes' => null,
                     'duree_normale' => null,
                     'heures_supplementaires' => null,
@@ -271,6 +272,20 @@ class DashboardController extends Controller
                 ->whereMonth('date_presence', now()->month)
                 ->whereYear('date_presence', now()->year)
                 ->get();
+
+            // Mettre à jour les statut_arrivee NULL basés sur heure_arrivee
+            $presencesMois->each(function ($presence) {
+                if ($presence->statut_arrivee === null && $presence->heure_arrivee) {
+                    $heureArrivee = Carbon::createFromFormat('H:i:s', $presence->heure_arrivee);
+                    $heureDebut = config('pointage.heure_debut');
+                    [$heure, $minute] = explode(':', $heureDebut);
+                    $heureLimite = now()->copy()->setTime((int) $heure, (int) $minute, 0);
+
+                    $presence->update([
+                        'statut_arrivee' => $heureArrivee->lessThanOrEqualTo($heureLimite) ? 'present' : 'retard'
+                    ]);
+                }
+            });
 
             $totalMoisMinutes = $presencesMois->sum('duree_minutes');
 
