@@ -1199,7 +1199,7 @@
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': csrfToken,
                                 'Accept': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest'
+                                'Accept': 'application/json'
                             },
                             body: JSON.stringify({
                                 latitude: lat,

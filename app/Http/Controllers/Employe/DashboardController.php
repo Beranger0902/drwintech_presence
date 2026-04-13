@@ -115,8 +115,8 @@ class DashboardController extends Controller
                     'statut_pointage' => 'absent',
                     'statut_arrivee' => null,
                     'duree_minutes' => null,
-                    'duree_normale' => null,
-                    'heures_supplementaires' => null,
+                    'duree_normale' => 0,
+                    'heures_supplementaires' => 0,
                 ]);
             }
             return;

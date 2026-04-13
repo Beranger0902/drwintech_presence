@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\PermissionController as AdminPermissionController
 use App\Http\Controllers\Admin\EmployeController;
 use App\Http\Controllers\Admin\StatistiqueController as AdminStatistiqueController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Agent\DashboardController as AgentDashboardController;
 use App\Http\Controllers\Agent\PresenceController;
 use App\Http\Controllers\Agent\RapportController;
 use App\Http\Controllers\Agent\StatistiqueController as AgentStatistiqueController;
@@ -62,7 +63,7 @@ Route::middleware('auth')->group(function () {
 
     // AGENT D'ACCUEIL
         Route::prefix('agent')->name('agent.')->middleware('role:agent_accueil')->group(function () {
-        Route::view('/dashboard', 'agent.dashboard')->name('dashboard');
+         Route::get('/dashboard', [\App\Http\Controllers\Agent\DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/presences', [PresenceController::class, 'index'])->name('presences.index');
         Route::get('/temps-travail', [TempsTravailController::class, 'index'])->name('temps-travail.index');
