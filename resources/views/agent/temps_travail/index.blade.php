@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Présences - Agent d’accueil</title>
+    <title>Temps de travail - Agent d’accueil</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
@@ -13,11 +13,28 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg-page: #dfe8f5;
+            --bg-panel: #edf3fb;
+            --white: #ffffff;
+            --border: #dbe5f2;
+            --border-soft: #e8eef7;
+            --text-main: #35527c;
+            --text-dark: #1f3f6d;
+            --text-soft: #6d84a3;
+            --blue: #2f7de1;
+            --blue-soft: rgba(91, 152, 238, 0.20);
+            --yellow: #eab14b;
+            --green: #43ad77;
+            --shadow: 0 8px 24px rgba(36, 74, 124, 0.08);
+            --shadow-card: 0 3px 10px rgba(29, 67, 112, 0.05);
+        }
+
         body {
             font-family: Arial, sans-serif;
-            background: #dfe8f5;
+            background: var(--bg-page);
             min-height: 100vh;
-            color: #35527c;
+            color: var(--text-main);
             overflow-x: hidden;
             overflow-y: auto;
         }
@@ -26,10 +43,10 @@
             width: 1460px;
             min-height: 900px;
             margin: 16px auto;
-            background: #edf3fb;
+            background: var(--bg-panel);
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 8px 24px rgba(36, 74, 124, 0.08);
+            box-shadow: var(--shadow);
             display: grid;
             grid-template-columns: 250px 1fr;
             grid-template-rows: 86px auto;
@@ -59,8 +76,8 @@
         }
 
         .topbar {
-            background: white;
-            border-bottom: 1px solid #dbe5f2;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -70,7 +87,7 @@
 
         .welcome-title {
             font-size: 22px;
-            color: #35527c;
+            color: var(--text-main);
         }
 
         .top-user-dropdown {
@@ -84,7 +101,12 @@
             background: transparent;
             border: none;
             cursor: pointer;
-            color: #35527c;
+            color: var(--text-main);
+            transition: transform 0.2s ease;
+        }
+
+        .top-user-btn:hover {
+            transform: translateY(-1px);
         }
 
         .top-user-btn img {
@@ -104,13 +126,13 @@
         .top-user-info .role {
             font-size: 12px;
             margin-top: 4px;
-            color: #6d84a3;
+            color: var(--text-soft);
             text-align: left;
         }
 
         .top-user-arrow {
             font-size: 16px;
-            color: #35527c;
+            color: var(--text-main);
         }
 
         .top-user-menu {
@@ -118,8 +140,8 @@
             top: 62px;
             right: 0;
             min-width: 170px;
-            background: white;
-            border: 1px solid #dbe5f2;
+            background: var(--white);
+            border: 1px solid var(--border);
             border-radius: 10px;
             box-shadow: 0 8px 20px rgba(36, 74, 124, 0.12);
             display: none;
@@ -140,7 +162,7 @@
             background: transparent;
             border: none;
             text-decoration: none;
-            color: #35527c;
+            color: var(--text-main);
             font-size: 14px;
             cursor: pointer;
         }
@@ -151,10 +173,11 @@
         }
 
         .sidebar {
-            background: #edf3fb;
+            background: var(--bg-panel);
             border-right: 1px solid #d7e2ef;
             padding: 10px 14px 16px;
             overflow: hidden;
+            animation: slideInLeft 0.45s ease;
         }
 
         .sidebar-controls {
@@ -169,16 +192,18 @@
             height: 38px;
             border: none;
             background: transparent;
-            color: #35527c;
+            color: var(--text-main);
             cursor: pointer;
             border-radius: 8px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            transition: background 0.2s ease, transform 0.25s ease;
         }
 
         .sidebar-toggle:hover {
             background: #e4edf8;
+            transform: rotate(90deg);
         }
 
         .sidebar-toggle svg {
@@ -197,12 +222,12 @@
 
         .menu a {
             text-decoration: none;
-            color: #35527c;
+            color: var(--text-main);
             display: flex;
             align-items: center;
             gap: 12px;
             padding: 12px 16px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
             border: none;
             background: transparent;
@@ -210,15 +235,16 @@
             text-align: left;
             cursor: pointer;
             white-space: nowrap;
-            transition: background 0.2s ease, color 0.2s ease;
+            transition: background 0.22s ease, color 0.22s ease, transform 0.22s ease;
         }
 
         .menu a:hover {
             background: rgba(91, 152, 238, 0.15);
+            transform: translateX(4px);
         }
 
         .menu a.active {
-            background: rgba(91, 152, 238, 0.20);
+            background: var(--blue-soft);
             border-left: 4px solid #5b98ee;
         }
 
@@ -267,18 +293,18 @@
         }
 
         .content {
-            background: #edf3fb;
+            background: var(--bg-panel);
             padding: 18px;
         }
 
         .content-header {
-            background: transparent;
             margin-bottom: 16px;
+            animation: fadeUp 0.45s ease;
         }
 
         .content-title {
             font-size: 24px;
-            color: #1f3f6d;
+            color: var(--text-dark);
             margin-bottom: 8px;
         }
 
@@ -293,23 +319,30 @@
         }
 
         .toolbar-card {
-            background: white;
-            border: 1px solid #dbe5f2;
+            background: var(--white);
+            border: 1px solid var(--border);
             border-radius: 16px;
-            box-shadow: 0 3px 10px rgba(29, 67, 112, 0.05);
+            box-shadow: var(--shadow-card);
             padding: 18px;
             margin-bottom: 18px;
+            animation: fadeUp 0.5s ease 0.06s both;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .toolbar-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 22px rgba(29, 67, 112, 0.08);
         }
 
         .toolbar-title {
             font-size: 16px;
-            color: #35527c;
+            color: var(--text-main);
             margin-bottom: 16px;
         }
 
         .toolbar-form {
             display: grid;
-            grid-template-columns: 1.35fr 1fr 0.85fr auto;
+            grid-template-columns: 1.25fr 1fr auto;
             gap: 16px;
             align-items: center;
         }
@@ -345,13 +378,13 @@
             align-items: center;
         }
 
-        .filter-range-wrap .separator-arrow {
+        .separator-arrow {
             color: #6f87a5;
             font-size: 22px;
             text-align: center;
         }
 
-        .filter-range-wrap .dropdown-arrow {
+        .dropdown-arrow {
             color: #6f87a5;
             font-size: 16px;
             margin-left: -30px;
@@ -362,18 +395,26 @@
         .filter-select {
             width: 100%;
             height: 48px;
-            border: 1px solid #dbe5f2;
+            border: 1px solid var(--border);
             border-radius: 12px;
-            background: white;
-            color: #35527c;
+            background: var(--white);
+            color: var(--text-main);
             padding: 0 14px 0 42px;
             font-size: 14px;
             outline: none;
             appearance: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .filter-select.simple {
-            padding-left: 14px;
+            padding-left: 42px;
+        }
+
+        .filter-input:focus,
+        .filter-select:focus,
+        .search-box input:focus {
+            border-color: #9bbcf0;
+            box-shadow: 0 0 0 3px rgba(47, 125, 225, 0.08);
         }
 
         .btn-filter {
@@ -381,23 +422,32 @@
             min-width: 112px;
             border: none;
             border-radius: 12px;
-            background: #2f7de1;
-            color: white;
+            background: var(--blue);
+            color: var(--white);
             font-size: 14px;
             cursor: pointer;
             padding: 0 22px;
+            transition: background 0.2s ease, transform 0.2s ease;
         }
 
         .btn-filter:hover {
             background: #266dca;
+            transform: translateY(-1px);
         }
 
         .table-card {
-            background: white;
-            border: 1px solid #dbe5f2;
+            background: var(--white);
+            border: 1px solid var(--border);
             border-radius: 16px;
-            box-shadow: 0 3px 10px rgba(29, 67, 112, 0.05);
+            box-shadow: var(--shadow-card);
             overflow: hidden;
+            animation: fadeUp 0.55s ease 0.12s both;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .table-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 22px rgba(29, 67, 112, 0.08);
         }
 
         .table-card-header {
@@ -410,7 +460,7 @@
 
         .table-card-title {
             font-size: 18px;
-            color: #1f3f6d;
+            color: var(--text-dark);
         }
 
         .search-box {
@@ -422,12 +472,13 @@
         .search-box input {
             width: 100%;
             height: 46px;
-            border: 1px solid #dbe5f2;
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 0 14px;
             font-size: 14px;
             outline: none;
-            color: #35527c;
+            color: var(--text-main);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
         .table-wrap {
@@ -441,7 +492,7 @@
 
         thead th {
             background: #f7faff;
-            color: #35527c;
+            color: var(--text-main);
             font-size: 14px;
             font-weight: normal;
             text-align: left;
@@ -453,12 +504,17 @@
             padding: 14px 18px;
             border-bottom: 1px solid #edf3fb;
             font-size: 14px;
-            color: #35527c;
+            color: var(--text-main);
             vertical-align: middle;
+        }
+
+        tbody tr {
+            transition: background 0.22s ease, transform 0.22s ease;
         }
 
         tbody tr:hover {
             background: rgba(47, 125, 225, 0.03);
+            transform: scale(1.002);
         }
 
         .employee-cell {
@@ -480,62 +536,30 @@
             line-height: 1.15;
         }
 
-        .badge-status {
+        .supp-badge {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-width: 108px;
-            padding: 8px 12px;
+            min-width: 74px;
+            padding: 7px 12px;
             border-radius: 999px;
             font-size: 13px;
+            background: #f4c56c;
+            color: #594107;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .badge-present {
-            background: #43ad77;
-            color: white;
-        }
-
-        .badge-retard {
-            background: #eab14b;
-            color: #4b3604;
-        }
-
-        .badge-absent {
-            background: #d9def1;
-            color: #52627d;
-        }
-
-        .badge-justify {
-            background: #e9f1ff;
-            color: #2f6fce;
-        }
-
-        .badge-conge {
-            background: #e7f7ed;
-            color: #2f9b55;
-        }
-
-        .badge-ferie {
-            background: #fff4d9;
-            color: #b78103;
-        }
-
-        .badge-weekend {
-            background: #f1ecff;
-            color: #6d57b3;
-        }
-
-        .badge-neutral {
-            background: #eef2f7;
-            color: #5f6f86;
+        .supp-badge:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
         }
 
         .action-btn {
             min-width: 98px;
             height: 42px;
             border-radius: 12px;
-            border: 1px solid #dbe5f2;
-            background: white;
+            border: 1px solid var(--border);
+            background: var(--white);
             color: #2f6fce;
             text-decoration: none;
             display: inline-flex;
@@ -548,6 +572,7 @@
 
         .action-btn:hover {
             background: #eef4fc;
+            transform: translateY(-1px);
         }
 
         .action-btn svg {
@@ -572,17 +597,6 @@
             font-size: 14px;
         }
 
-        .pagination-zone .pagination-links {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .pagination-zone .pagination-links svg {
-            width: 18px;
-            height: 18px;
-        }
-
         .pagination-zone .pagination-links nav {
             display: flex;
             align-items: center;
@@ -600,18 +614,18 @@
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            border: 1px solid #dbe5f2;
+            border: 1px solid var(--border);
             color: #5f7da5;
-            background: white;
+            background: var(--white);
             font-size: 14px;
             padding: 0 10px;
         }
 
         .pagination-zone .pagination-links .active span,
         .pagination-zone .pagination-links span[aria-current="page"] {
-            background: #2f7de1;
-            color: white;
-            border-color: #2f7de1;
+            background: var(--blue);
+            color: var(--white);
+            border-color: var(--blue);
         }
 
         .modal-overlay {
@@ -623,19 +637,22 @@
             justify-content: center;
             z-index: 3000;
             padding: 16px;
+            backdrop-filter: blur(2px);
         }
 
         .modal-overlay.show {
             display: flex;
+            animation: fadeIn 0.25s ease;
         }
 
         .modal-box {
             width: 100%;
-            max-width: 620px;
-            background: white;
+            max-width: 720px;
+            background: var(--white);
             border-radius: 18px;
             box-shadow: 0 18px 50px rgba(0,0,0,0.18);
             overflow: hidden;
+            animation: modalPop 0.28s ease;
         }
 
         .modal-header {
@@ -648,7 +665,7 @@
 
         .modal-header h2 {
             font-size: 22px;
-            color: #1f3f6d;
+            color: var(--text-dark);
             font-weight: normal;
         }
 
@@ -660,51 +677,148 @@
             cursor: pointer;
             text-decoration: none;
             line-height: 1;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        .close-modal-btn:hover {
+            color: var(--text-main);
+            transform: rotate(90deg);
+        }
+
+        .modal-employee {
+            padding: 18px 20px 12px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .modal-employee-avatar {
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            border: 1px solid #d9e4f1;
+            object-fit: cover;
+        }
+
+        .modal-employee-name {
+            font-size: 18px;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+
+        .modal-employee-period {
+            font-size: 14px;
+            color: var(--text-soft);
         }
 
         .modal-body {
-            padding: 20px;
+            padding: 0 20px 18px;
         }
 
-        .detail-grid {
-            display: grid;
-            grid-template-columns: 110px 1fr;
-            gap: 14px 18px;
-            margin-bottom: 18px;
+        .modal-table-wrap {
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
         }
 
-        .detail-label {
-            color: #6d84a3;
+        .modal-summary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 14px 0 4px;
+        }
+
+        .summary-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            padding: 10px 18px;
             font-size: 14px;
         }
 
-        .detail-value {
-            color: #1f3f6d;
-            font-size: 14px;
+        .pill-total {
+            background: #5e9a8a;
+            color: white;
+        }
+
+        .pill-supp {
+            background: #eab14b;
+            color: #4b3604;
         }
 
         .modal-footer {
             padding: 0 20px 20px;
             display: flex;
-            justify-content: flex-end;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .modal-footer-info {
+            color: #6e84a2;
+            font-size: 14px;
         }
 
         .btn-secondary {
             height: 46px;
-            padding: 0 20px;
+            padding: 0 22px;
             border-radius: 12px;
             border: none;
-            background: #2f7de1;
+            background: var(--blue);
             color: white;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
+            transition: background 0.2s ease, transform 0.2s ease;
         }
 
         .btn-secondary:hover {
             background: #266dca;
+            transform: translateY(-1px);
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes modalPop {
+            from {
+                opacity: 0;
+                transform: scale(0.96) translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
 
         @media (max-width: 1450px) {
@@ -738,14 +852,14 @@
 
         <div class="topbar">
             <div class="welcome-title">
-                Bienvenue, {{ $agent->name ?? 'Agent d’accueil' }}
+                Bienvenue, {{ auth()->user()->name ?? 'Stéphane Dupont' }}
             </div>
 
             <div class="top-user-dropdown" id="topUserDropdown">
                 <button type="button" class="top-user-btn" id="topUserBtn">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode($agent->name ?? 'Agent') }}&background=ffffff&color=2d6fe0&size=120" alt="Profil">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name ?? 'Stephane Dupont') }}&background=ffffff&color=2d6fe0&size=120" alt="Profil">
                     <div class="top-user-info">
-                        <div class="name">{{ $agent->name ?? 'Agent d’accueil' }}</div>
+                        <div class="name">{{ auth()->user()->name ?? 'Stéphane Dupont' }}</div>
                         <div class="role">Agent d’accueil</div>
                     </div>
                     <span class="top-user-arrow">▾</span>
@@ -783,7 +897,7 @@
                     <span class="menu-text">Tableau de bord</span>
                 </a>
 
-                <a href="{{ route('agent.presences.index') }}" class="active">
+                <a href="{{ route('agent.presences.index') }}">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
                             <path d="M7 3H17"></path>
@@ -797,7 +911,7 @@
                     <span class="menu-text">Présences</span>
                 </a>
 
-                <a href="{{ route('agent.temps-travail.index') }}">
+                <a href="{{ route('agent.temps-travail.index') }}" class="active">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
                             <path d="M12 8V12L15 15"></path>
@@ -823,16 +937,16 @@
 
         <main class="content">
             <div class="content-header">
-                <div class="content-title">Présences</div>
+                <div class="content-title">Temps de travail</div>
                 <div class="breadcrumb">
                     <a href="{{ route('agent.dashboard') }}">Accueil</a>
                     &nbsp; / &nbsp;
-                    <span>Présences</span>
+                    <span>Temps de travail</span>
                 </div>
             </div>
 
-            <form method="GET" action="{{ route('agent.presences.index') }}" class="toolbar-card">
-                <div class="toolbar-title">Enregistrements: {{ $totalPresences }} résultats</div>
+            <form method="GET" action="{{ route('agent.temps-travail.index') }}" class="toolbar-card">
+                <div class="toolbar-title">Enregistrements: {{ count($data) }} résultats</div>
 
                 <div class="toolbar-form">
                     <div class="filter-field">
@@ -846,9 +960,9 @@
                         </span>
 
                         <div class="filter-range-wrap">
-                            <input type="date" name="date_debut" class="filter-input" value="{{ $dateDebut->format('Y-m-d') }}">
+                            <input type="date" name="date_debut" class="filter-input" value="{{ $dateDebut }}">
                             <span class="separator-arrow">→</span>
-                            <input type="date" name="date_fin" class="filter-input" value="{{ $dateFin->format('Y-m-d') }}">
+                            <input type="date" name="date_fin" class="filter-input" value="{{ $dateFin }}">
                             <span class="dropdown-arrow">▾</span>
                         </div>
                     </div>
@@ -860,28 +974,14 @@
                                 <path d="M4 20C4 16.5 7.5 14 12 14C16.5 14 20 16.5 20 20"></path>
                             </svg>
                         </span>
-                        <select name="departement" class="filter-select">
-                            <option value="">Tous les départements</option>
-                            @foreach($departements as $item)
-                                <option value="{{ $item }}" {{ $departement === $item ? 'selected' : '' }}>
-                                    {{ $item }}
+                        <select name="employe_id" class="filter-select simple">
+                            <option value="">Tous les employés</option>
+                            @foreach($employes as $emp)
+                                <option value="{{ $emp->id }}" {{ request('employe_id') == $emp->id ? 'selected' : '' }}>
+                                    {{ $emp->prenom }} {{ $emp->nom }}
                                 </option>
                             @endforeach
                         </select>
-                    </div>
-
-                    <div class="filter-field">
-                        <select name="statut" class="filter-select simple">
-                            <option value="">Tous</option>
-                            <option value="present" {{ $statut === 'present' ? 'selected' : '' }}>Présent</option>
-                            <option value="termine" {{ $statut === 'termine' ? 'selected' : '' }}>Terminé</option>
-                            <option value="retard" {{ $statut === 'retard' ? 'selected' : '' }}>En retard</option>
-                            <option value="absent" {{ $statut === 'absent' ? 'selected' : '' }}>Absent</option>
-                            <option value="absent_justifie" {{ $statut === 'absent_justifie' ? 'selected' : '' }}>Absence justifiée</option>
-                            <option value="conge" {{ $statut === 'conge' ? 'selected' : '' }}>En congé</option>
-                            <option value="ferie" {{ $statut === 'ferie' ? 'selected' : '' }}>Jour férié</option>
-                            <option value="weekend" {{ $statut === 'weekend' ? 'selected' : '' }}>Week-end</option>
-                         </select>
                     </div>
 
                     <button type="submit" class="btn-filter">Filtrer</button>
@@ -890,14 +990,13 @@
 
             <div class="table-card">
                 <div class="table-card-header">
-                    <div class="table-card-title">Liste des présences</div>
+                    <div class="table-card-title">Temps de travail des employés</div>
 
-                    <form method="GET" action="{{ route('agent.presences.index') }}" class="search-box">
-                        <input type="hidden" name="date_debut" value="{{ $dateDebut->format('Y-m-d') }}">
-                        <input type="hidden" name="date_fin" value="{{ $dateFin->format('Y-m-d') }}">
-                        <input type="hidden" name="departement" value="{{ $departement }}">
-                        <input type="hidden" name="statut" value="{{ $statut }}">
-                        <input type="text" name="search" placeholder="Rechercher" value="{{ $search }}">
+                    <form method="GET" action="{{ route('agent.temps-travail.index') }}" class="search-box">
+                        <input type="hidden" name="date_debut" value="{{ $dateDebut }}">
+                        <input type="hidden" name="date_fin" value="{{ $dateFin }}">
+                        <input type="hidden" name="employe_id" value="{{ request('employe_id') }}">
+                        <input type="text" name="search" placeholder="Rechercher" value="{{ request('search') }}">
                     </form>
                 </div>
 
@@ -906,41 +1005,18 @@
                         <thead>
                             <tr>
                                 <th>Nom</th>
-                                <th>Date</th>
-                                <th>Heure arrivée</th>
-                                <th>Heure départ</th>
-                                <th>Statut</th>
+                                <th>Total heures</th>
+                                <th>Heures en service</th>
+                                <th>Heures supplémentaires</th>
                                 <th></th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            @forelse($presences as $presence)
+                            @forelse($data as $item)
                                 @php
-                                    $nom = trim(($presence->employe?->prenom ?? '') . ' ' . ($presence->employe?->nom ?? ''));
+                                    $nom = trim(($item['employe']->prenom ?? '') . ' ' . ($item['employe']->nom ?? ''));
                                     $avatarName = urlencode($nom ?: 'Employe');
-
-                                     $badgeClass = match($presence->statut_pointage) {
-                                        'retard' => 'badge-retard',
-                                        'absent' => 'badge-absent',
-                                        'absent_justifie' => 'badge-justify',
-                                        'conge' => 'badge-conge',
-                                        'ferie' => 'badge-ferie',
-                                        'weekend' => 'badge-weekend',
-                                        'termine', 'present' => 'badge-present',
-                                        default => 'badge-neutral',
-                                    };
-
-                                    $badgeLabel = match($presence->statut_pointage) {
-                                        'retard' => 'En retard',
-                                        'absent' => 'Absent',
-                                        'absent_justifie' => 'Permission',
-                                        'conge' => 'En congé',
-                                        'ferie' => 'Jour férié',
-                                        'weekend' => 'Week-end',
-                                        'termine', 'present' => 'Présent',
-                                        default => ucfirst(str_replace('_', ' ', $presence->statut_pointage ?? 'Inconnu')),
-                                    };
                                 @endphp
 
                                 <tr>
@@ -954,15 +1030,19 @@
                                             <div class="employee-name">{{ $nom ?: 'Employé' }}</div>
                                         </div>
                                     </td>
-                                    <td>{{ \Carbon\Carbon::parse($presence->date_presence)->format('d/m/Y') }}</td>
-                                    <td>{{ $presence->heure_arrivee ? \Carbon\Carbon::parse($presence->heure_arrivee)->format('H:i') : '-' }}</td>
-                                    <td>{{ $presence->heure_depart ? \Carbon\Carbon::parse($presence->heure_depart)->format('H:i') : '' }}</td>
+
+                                    <td>{{ $item['total_heures'] }} h</td>
+                                    <td>{{ $item['heures_service'] }} h</td>
                                     <td>
-                                        <span class="badge-status {{ $badgeClass }}">{{ $badgeLabel }}</span>
+                                        @if($item['heures_supp'] > 0)
+                                            <span class="supp-badge">{{ $item['heures_supp'] }} h</span>
+                                        @else
+                                            -
+                                        @endif
                                     </td>
                                     <td>
                                         <a
-                                            href="{{ route('agent.presences.index', array_merge(request()->query(), ['view' => $presence->id])) }}"
+                                            href="{{ route('agent.temps-travail.index', array_merge(request()->query(), ['view' => $item['employe']->id])) }}"
                                             class="action-btn"
                                         >
                                             <svg viewBox="0 0 24 24">
@@ -975,7 +1055,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6">Aucune présence trouvée.</td>
+                                    <td colspan="5">Aucune donnée trouvée.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -984,96 +1064,86 @@
 
                 <div class="pagination-zone">
                     <div class="pagination-info">
-                        Affichage de {{ $presences->firstItem() ?? 0 }} à {{ $presences->lastItem() ?? 0 }} sur {{ $presences->total() }} entrées
+                        Affichage de {{ $employes->firstItem() ?? 0 }} à {{ $employes->lastItem() ?? 0 }} sur {{ $employes->total() }} entrées
                     </div>
 
                     <div class="pagination-links">
-                        {{ $presences->links() }}
+                        {{ $employes->links() }}
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    @if($selectedPresence && $openModal === 'view')
+    @if($selectedEmploye)
         @php
-             $selectedBadgeClass = match($selectedPresence->statut_pointage) {
-                'retard' => 'badge-retard',
-                'absent' => 'badge-absent',
-                'absent_justifie' => 'badge-justify',
-                'conge' => 'badge-conge',
-                'ferie' => 'badge-ferie',
-                'weekend' => 'badge-weekend',
-                'termine', 'present' => 'badge-present',
-                default => 'badge-neutral',
-            };
-
-            $selectedBadgeLabel = match($selectedPresence->statut_pointage) {
-                'retard' => 'En retard',
-                'absent' => 'Absent',
-                'absent_justifie' => 'Permission',
-                'conge' => 'En congé',
-                'ferie' => 'Jour férié',
-                'weekend' => 'Week-end',
-                'termine', 'present' => 'Présent',
-                default => ucfirst(str_replace('_', ' ', $selectedPresence->statut_pointage ?? 'Inconnu')),
-            };
+            $selectedNom = trim(($selectedEmploye->prenom ?? '') . ' ' . ($selectedEmploye->nom ?? ''));
+            $selectedAvatar = urlencode($selectedNom ?: 'Employe');
+            $totalHoursLabel = floor($totalGlobal / 60) . ' h ' . ($totalGlobal % 60) . ' min';
+            $suppHoursLabel = floor($suppGlobal / 60) . ' h ' . ($suppGlobal % 60) . ' min';
         @endphp
 
-        <div class="modal-overlay show" id="viewPresenceModal">
+        <div class="modal-overlay show" id="viewWorkModal">
             <div class="modal-box">
                 <div class="modal-header">
-                    <h2>Détail de la présence</h2>
-                    <a href="{{ route('agent.presences.index', request()->except(['view'])) }}" class="close-modal-btn">&times;</a>
+                    <h2>Détail du temps de travail</h2>
+                    <a href="{{ route('agent.temps-travail.index', request()->except(['view'])) }}" class="close-modal-btn">&times;</a>
+                </div>
+
+                <div class="modal-employee">
+                    <img
+                        src="https://ui-avatars.com/api/?name={{ $selectedAvatar }}&background=ffffff&color=2d6fe0&size=120"
+                        alt="{{ $selectedNom }}"
+                        class="modal-employee-avatar"
+                    >
+                    <div>
+                        <div class="modal-employee-name">{{ $selectedNom }}</div>
+                        <div class="modal-employee-period">
+                            {{ \Carbon\Carbon::parse($dateDebut)->translatedFormat('F Y') }}
+                        </div>
+                    </div>
                 </div>
 
                 <div class="modal-body">
-                    <div class="detail-grid">
-                        <div class="detail-label">Employé</div>
-                        <div class="detail-value">
-                            {{ $selectedPresence->employe?->prenom ?? '' }} {{ $selectedPresence->employe?->nom ?? '' }}
-                        </div>
+                    <div class="modal-table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Heure arrivée</th>
+                                    <th>Heure départ</th>
+                                    <th>Temps travaillé</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($details as $detail)
+                                    <tr>
+                                        <td>{{ \Carbon\Carbon::parse($detail['date'])->format('d/m/Y') }}</td>
+                                        <td>{{ $detail['arrivee'] ? \Carbon\Carbon::parse($detail['arrivee'])->format('H:i') : '-' }}</td>
+                                        <td>{{ $detail['depart'] ? \Carbon\Carbon::parse($detail['depart'])->format('H:i') : '-' }}</td>
+                                        <td>{{ $detail['temps'] ?? '-' }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4">Aucun détail trouvé.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
 
-                        <div class="detail-label">Matricule</div>
-                        <div class="detail-value">{{ $selectedPresence->employe?->matricule ?? '-' }}</div>
-
-                        <div class="detail-label">Département</div>
-                        <div class="detail-value">{{ $selectedPresence->employe?->departement ?? '-' }}</div>
-
-                        <div class="detail-label">Date</div>
-                        <div class="detail-value">{{ \Carbon\Carbon::parse($selectedPresence->date_presence)->format('d/m/Y') }}</div>
-
-                        <div class="detail-label">Heure arrivée</div>
-                        <div class="detail-value">
-                            {{ $selectedPresence->heure_arrivee ? \Carbon\Carbon::parse($selectedPresence->heure_arrivee)->format('H:i:s') : '-' }}
-                        </div>
-
-                        <div class="detail-label">Heure départ</div>
-                        <div class="detail-value">
-                            {{ $selectedPresence->heure_depart ? \Carbon\Carbon::parse($selectedPresence->heure_depart)->format('H:i:s') : '-' }}
-                        </div>
-
-                        <div class="detail-label">Statut</div>
-                        <div class="detail-value">
-                            <span class="badge-status {{ $selectedBadgeClass }}">{{ $selectedBadgeLabel }}</span>
-                        </div>
-
-                        <div class="detail-label">Latitude arrivée</div>
-                        <div class="detail-value">{{ $selectedPresence->latitude_arrivee ?? '-' }}</div>
-
-                        <div class="detail-label">Longitude arrivée</div>
-                        <div class="detail-value">{{ $selectedPresence->longitude_arrivee ?? '-' }}</div>
-
-                        <div class="detail-label">Latitude départ</div>
-                        <div class="detail-value">{{ $selectedPresence->latitude_depart ?? '-' }}</div>
-
-                        <div class="detail-label">Longitude départ</div>
-                        <div class="detail-value">{{ $selectedPresence->longitude_depart ?? '-' }}</div>
+                    <div class="modal-summary">
+                        <span class="summary-pill pill-total">Total : {{ $totalHoursLabel }}</span>
+                        <span class="summary-pill pill-supp">Dont heures supp : {{ $suppHoursLabel }}</span>
                     </div>
                 </div>
 
                 <div class="modal-footer">
-                    <a href="{{ route('agent.presences.index', request()->except(['view'])) }}" class="btn-secondary">Fermer</a>
+                    <div class="modal-footer-info">
+                        Affichage de 1 à {{ $details->count() }} sur {{ $details->count() }} pointages
+                    </div>
+
+                    <a href="{{ route('agent.temps-travail.index', request()->except(['view'])) }}" class="btn-secondary">Fermer</a>
                 </div>
             </div>
         </div>

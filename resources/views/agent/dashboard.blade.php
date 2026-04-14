@@ -454,6 +454,32 @@
             color: #52627d;
         }
 
+        .badge-justify {
+            background: #e9f1ff;
+            color: #2f6fce;
+        }
+
+        .badge-conge {
+            background: #e7f7ed;
+            color: #2f9b55;
+        }
+
+        .badge-ferie {
+            background: #fff4d9;
+            color: #b78103;
+        }
+
+        .badge-weekend {
+            background: #f1ecff;
+            color: #6d57b3;
+        }
+
+        .badge-neutral {
+            background: #eef2f7;
+            color: #5f6f86;
+        }
+
+
         .activity-list {
             display: flex;
             flex-direction: column;
@@ -856,16 +882,27 @@
                                         $nom = trim(($presence->employe?->prenom ?? '') . ' ' . ($presence->employe?->nom ?? ''));
                                         $avatarName = urlencode($nom ?: 'Employe');
                                         $badgeClass = match($presence->statut_pointage) {
+                                            'present' => 'badge-present',
                                             'retard' => 'badge-retard',
                                             'absent' => 'badge-absent',
-                                            default => 'badge-present',
+                                            'absent_justifie' => 'badge-justify',
+                                            'conge' => 'badge-conge',
+                                            'ferie' => 'badge-ferie',
+                                            'weekend' => 'badge-weekend',
+                                            default => 'badge-neutral',
                                         };
+
                                         $badgeLabel = match($presence->statut_pointage) {
+                                            'present' => 'Présent',
                                             'retard' => 'En retard',
                                             'absent' => 'Absent',
-                                            default => 'Présent',
+                                            'absent_justifie' => 'Permission',
+                                            'conge' => 'En congé',
+                                            'ferie' => 'Jour férié',
+                                            'weekend' => 'Week-end',
+                                            default => 'Inconnu',
                                         };
-                                    @endphp
+                                 @endphp
                                     <tr>
                                         <td>
                                             <div class="employee-cell">
@@ -877,7 +914,13 @@
                                                 <div class="employee-name">{{ $nom ?: 'Employé' }}</div>
                                             </div>
                                         </td>
-                                        <td>{{ $presence->heure_arrivee ? \Carbon\Carbon::parse($presence->heure_arrivee)->format('H:i') : 'Absent' }}</td>
+                                       <td>
+                                            @if(in_array($presence->statut_pointage, ['absent', 'absent_justifie', 'conge', 'ferie', 'weekend']))
+                                                -
+                                            @else
+                                                {{ $presence->heure_arrivee ?? '-' }}
+                                            @endif
+                                        </td>
                                         <td>{{ $presence->heure_depart ? \Carbon\Carbon::parse($presence->heure_depart)->format('H:i') : '' }}</td>
                                         <td>
                                             <span class="badge-status {{ $badgeClass }}">{{ $badgeLabel }}</span>
