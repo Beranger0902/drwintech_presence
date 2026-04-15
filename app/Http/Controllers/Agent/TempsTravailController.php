@@ -70,7 +70,7 @@ class TempsTravailController extends Controller
             ];
         }
 
-        // 🔍 Modal (voir détail)
+        //  Modal (voir détail)
         $selectedEmploye = null;
         $details = collect();
         $totalGlobal = 0;

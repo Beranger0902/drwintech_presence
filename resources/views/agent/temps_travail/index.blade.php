@@ -517,21 +517,18 @@
             transform: scale(1.002);
         }
 
-        .employee-cell {
+        .employee-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
+            gap: 12px;
+            margin-bottom: 14px;
+        }    
 
         .employee-avatar {
-            width: 42px;
-            height: 42px;
-            min-width: 42px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid #d9e4f1;
+            width: 48px;
+            height: 48px;
+            font-size: 16px;
         }
-
         .employee-name {
             line-height: 1.15;
         }
@@ -552,6 +549,12 @@
         .supp-badge:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        .summary-badge {
+            padding: 8px 14px;
+            font-size: 13px;
+            border-radius: 999px;
         }
 
         .action-btn {
@@ -645,16 +648,24 @@
             animation: fadeIn 0.25s ease;
         }
 
+
         .modal-box {
             width: 100%;
-            max-width: 720px;
-            background: var(--white);
+            max-width: 700px; /* 🔥 réduit fortement */
+            max-height: 85vh;
+            background: white;
             border-radius: 18px;
-            box-shadow: 0 18px 50px rgba(0,0,0,0.18);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
             overflow: hidden;
-            animation: modalPop 0.28s ease;
+            display: flex;
+            flex-direction: column;
+            animation: modalPop 0.25s ease;
         }
 
+        .modal-body-scroll {
+            overflow-y: auto;
+            max-height: calc(85vh - 70px);
+        }
         .modal-header {
             padding: 18px 20px;
             border-bottom: 1px solid #e6edf7;
@@ -712,13 +723,19 @@
         }
 
         .modal-body {
-            padding: 0 20px 18px;
+            padding: 16px 18px;
         }
 
         .modal-table-wrap {
             border: 1px solid var(--border);
             border-radius: 14px;
             overflow: hidden;
+        }
+
+        .modal-body table th,
+        .modal-body table td {
+            padding: 10px 12px;
+            font-size: 13px;
         }
 
         .modal-summary {
@@ -1104,39 +1121,42 @@
                     </div>
                 </div>
 
-                <div class="modal-body">
-                    <div class="modal-table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Heure arrivée</th>
-                                    <th>Heure départ</th>
-                                    <th>Temps travaillé</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($details as $detail)
+                <div class="modal-body-scroll">
+                    <div class="modal-body">
+                        <div class="modal-table-wrap">
+                            <table>
+                                <thead>
                                     <tr>
-                                        <td>{{ \Carbon\Carbon::parse($detail['date'])->format('d/m/Y') }}</td>
-                                        <td>{{ $detail['arrivee'] ? \Carbon\Carbon::parse($detail['arrivee'])->format('H:i') : '-' }}</td>
-                                        <td>{{ $detail['depart'] ? \Carbon\Carbon::parse($detail['depart'])->format('H:i') : '-' }}</td>
-                                        <td>{{ $detail['temps'] ?? '-' }}</td>
+                                        <th>Date</th>
+                                        <th>Heure arrivée</th>
+                                        <th>Heure départ</th>
+                                        <th>Temps travaillé</th>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4">Aucun détail trouvé.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody>
+                                    @forelse($details as $detail)
+                                        <tr>
+                                            <td>{{ \Carbon\Carbon::parse($detail['date'])->format('d/m/Y') }}</td>
+                                            <td>{{ $detail['arrivee'] ? \Carbon\Carbon::parse($detail['arrivee'])->format('H:i') : '-' }}</td>
+                                            <td>{{ $detail['depart'] ? \Carbon\Carbon::parse($detail['depart'])->format('H:i') : '-' }}</td>
+                                            <td>{{ $detail['temps'] ?? '-' }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4">Aucun détail trouvé.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
 
-                    <div class="modal-summary">
-                        <span class="summary-pill pill-total">Total : {{ $totalHoursLabel }}</span>
-                        <span class="summary-pill pill-supp">Dont heures supp : {{ $suppHoursLabel }}</span>
+                        <div class="modal-summary">
+                            <span class="summary-pill pill-total">Total : {{ $totalHoursLabel }}</span>
+                            <span class="summary-pill pill-supp">Dont heures supp : {{ $suppHoursLabel }}</span>
+                        </div>
                     </div>
-                </div>
+             </div>
+            
 
                 <div class="modal-footer">
                     <div class="modal-footer-info">
