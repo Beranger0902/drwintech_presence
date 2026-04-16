@@ -12,26 +12,27 @@ class DashboardController extends Controller
      public function index(Request $request)
     {
         $agent = $request->user();
-        $today = Carbon::today();
+        $startDate = Carbon::now()->subDays(7);
+        $endDate = Carbon::now();
 
         /*
         
         | Cartes statistiques du haut
         
         */
-        $presents = Presence::whereDate('date_presence', $today)
+        $presents = Presence::whereBetween('created_at', [ $startDate , $endDate])
             ->whereIn('statut_pointage', ['present', 'termine'])
             ->count();
 
-        $retards = Presence::whereDate('date_presence', $today)
+        $retards = Presence::whereBetween('created_at', [ $startDate , $endDate])
             ->where('statut_pointage', 'retard')
             ->count();
 
-        $absents = Presence::whereDate('date_presence', $today)
+        $absents = Presence::whereBetween('created_at', [ $startDate , $endDate])
             ->where('statut_pointage', 'absent')
             ->count();
 
-        $totalPointages = Presence::whereDate('date_presence', $today)
+        $totalPointages = Presence::whereBetween('created_at', [ $startDate , $endDate])
             ->count();
 
         /*
@@ -39,10 +40,9 @@ class DashboardController extends Controller
         | Pointages récents
         
         */
-        $pointagesRecents = Presence::with(['employe.user'])
-            ->whereDate('date_presence', $today)
-            ->orderByDesc('updated_at')
-            ->take(5)
+        $pointagesRecents = Presence::whereBetween('created_at', [ $startDate , $endDate])
+            ->latest()
+            ->take(3)
             ->get();
 
         /*

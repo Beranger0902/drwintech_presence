@@ -797,6 +797,8 @@
                     <span class="menu-text">Présences</span>
                 </a>
 
+                
+                {{--    
                 <a href="{{ route('agent.temps-travail.index') }}">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
@@ -806,6 +808,9 @@
                     </span>
                     <span class="menu-text">Temps de travail</span>
                 </a>
+
+                --}}
+
 
                 <a href="{{ route('agent.rapports.index') }}">
                     <span class="menu-icon">

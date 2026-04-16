@@ -11,7 +11,7 @@ use App\Http\Controllers\Agent\DashboardController as AgentDashboardController;
 use App\Http\Controllers\Agent\PresenceController;
 use App\Http\Controllers\Agent\RapportController;
 use App\Http\Controllers\Agent\StatistiqueController as AgentStatistiqueController;
-use App\Http\Controllers\Agent\TempsTravailController;
+/*use App\Http\Controllers\Agent\TempsTravailController;*/
 use App\Http\Controllers\Employe\CongeController;
 use App\Http\Controllers\Employe\PermissionController;
 use App\Http\Controllers\Employe\HistoriqueController;
@@ -89,9 +89,11 @@ Route::middleware('auth')->group(function () {
          Route::get('/dashboard', [\App\Http\Controllers\Agent\DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/presences', [PresenceController::class, 'index'])->name('presences.index');
-        Route::get('/temps-travail', [TempsTravailController::class, 'index'])->name('temps-travail.index');
+      /*  Route::get('/temps-travail', [TempsTravailController::class, 'index'])->name('temps-travail.index');*/
         Route::get('/rapports', [RapportController::class, 'index'])->name('rapports.index');
         Route::get('/statistiques', [AgentStatistiqueController::class, 'index'])->name('statistiques.index');
+        Route::get('/rapports/export/pdf', [RapportController::class, 'exportPDF'])->name('rapports.export.pdf');
+        Route::get('/rapports/export/excel', [RapportController::class, 'exportExcel'])->name('rapports.export.excel');
     });
 
     // EMPLOYE

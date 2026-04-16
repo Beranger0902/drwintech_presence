@@ -1198,6 +1198,8 @@
                     <span class="menu-text">Présences</span>
                 </a>
 
+
+                {{--    
                 <a href="{{ route('agent.temps-travail.index') }}">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
@@ -1207,6 +1209,8 @@
                     </span>
                     <span class="menu-text">Temps de travail</span>
                 </a>
+
+                --}}
 
                 <a href="{{ route('agent.rapports.index') }}" class="active">
                     <span class="menu-icon">
@@ -1532,7 +1536,14 @@
 
                     <div class="modal-footer">
                         <div class="export-actions">
-                            <button type="button" class="btn-export btn-pdf">
+                            <a 
+                                href="{{ route('agent.rapports.export.pdf', [
+                                    'date_debut' => $dateDebut->format('Y-m-d'),
+                                    'date_fin' => $dateFin->format('Y-m-d'),
+                                    'employe_id' => $employeId
+                                ]) }}"
+                                class="btn-export btn-pdf"
+                            >
                                 <svg viewBox="0 0 24 24">
                                     <path d="M4 19V5A2 2 0 0 1 6 3H14L20 9V19A2 2 0 0 1 18 21H6A2 2 0 0 1 4 19Z"></path>
                                     <path d="M14 3V9H20"></path>
@@ -1540,9 +1551,9 @@
                                     <path d="M8 17H16"></path>
                                 </svg>
                                 Exporter en PDF
-                            </button>
+                            </a>
 
-                            <button type="button" class="btn-export btn-excel">
+                          {{--  <<button type="button" class="btn-export btn-excel">
                                 <svg viewBox="0 0 24 24">
                                     <path d="M4 19V5A2 2 0 0 1 6 3H14L20 9V19A2 2 0 0 1 18 21H6A2 2 0 0 1 4 19Z"></path>
                                     <path d="M14 3V9H20"></path>
@@ -1550,7 +1561,7 @@
                                     <path d="M12 13L8 17"></path>
                                 </svg>
                                 Exporter en Excel
-                            </button>
+                            </button>--}}
                         </div>
 
                         <button type="button" class="btn-close-result" id="closeResultFooterBtn">Fermer</button>
@@ -1662,6 +1673,7 @@
                                     Exporter en PDF
                                 </button>
 
+                                {{--   
                                 <button type="button" class="btn-export btn-excel">
                                     <svg viewBox="0 0 24 24">
                                         <path d="M4 19V5A2 2 0 0 1 6 3H14L20 9V19A2 2 0 0 1 18 21H6A2 2 0 0 1 4 19Z"></path>
@@ -1671,6 +1683,7 @@
                                     </svg>
                                     Exporter en Excel
                                 </button>
+                                --}}
                             </div>
 
                             <button type="button" class="btn-close-result" id="closeWorkResultFooterBtn">Fermer</button>
@@ -1863,6 +1876,14 @@
                     });
                 }
             @endif
+
+
+            document.querySelectorAll('.btn-pdf').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const params = new URLSearchParams(new FormData(document.getElementById('reportFilterForm')));
+                window.open("/rapports/export/pdf?" + params.toString(), "_blank");
+            });
+        });
 
             const loadingWorkModal = document.getElementById('loadingWorkModal');
             const resultWorkModal = document.getElementById('resultWorkModal');

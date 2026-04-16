@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Agent;
 
 use App\Http\Controllers\Controller;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Employe;
 use App\Models\Presence;
 use Illuminate\Http\Request;
@@ -69,6 +70,30 @@ class RapportController extends Controller
             'rapportPresence',
             'rapportWork'
         ));
+    }
+
+    
+    public function exportPdf(Request $request)
+    {
+        $dateDebut = Carbon::parse($request->date_debut)->startOfDay();
+        $dateFin = Carbon::parse($request->date_fin)->endOfDay();
+        $employeId = $request->employe_id;
+
+        $rapportPresence = $this->buildPresenceReport($dateDebut, $dateFin, $employeId);
+
+        $employe = null;
+        if ($employeId) {
+            $employe = Employe::find($employeId);
+        }
+
+        $pdf = Pdf::loadView('agent.rapports.export.pdf', [
+            'rapport' => $rapportPresence,
+            'dateDebut' => $dateDebut,
+            'dateFin' => $dateFin,
+            'employe' => $employe
+        ]);
+
+        return $pdf->download('rapport.pdf');
     }
 
     private function buildPresenceReport(Carbon $dateDebut, Carbon $dateFin, ?string $employeId = null): array

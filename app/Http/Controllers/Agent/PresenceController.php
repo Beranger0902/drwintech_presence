@@ -52,7 +52,7 @@ class PresenceController extends Controller
         $presences = $query
             ->orderByDesc('date_presence')
             ->orderByDesc('heure_arrivee')
-            ->paginate(8)
+            ->paginate(5)
             ->withQueryString();
 
         $totalPresences = (clone $query)->count();

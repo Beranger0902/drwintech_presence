@@ -1,3 +1,4 @@
+{{-- 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -5,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Temps de travail - Agent d’accueil</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
+   
     <style>
         * {
             margin: 0;
@@ -1199,3 +1200,4 @@
     </script>
 </body>
 </html>
+--}}

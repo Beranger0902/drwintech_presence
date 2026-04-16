@@ -766,6 +766,7 @@
                     <span class="menu-text">Présences</span>
                 </a>
 
+                {{--    
                 <a href="{{ route('agent.temps-travail.index') }}">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
@@ -775,6 +776,8 @@
                     </span>
                     <span class="menu-text">Temps de travail</span>
                 </a>
+
+                --}}
 
                 <a href="{{ route('agent.rapports.index') }}">
                     <span class="menu-icon">
@@ -810,7 +813,7 @@
                     <div>
                         <div class="summary-title">Présents</div>
                         <div class="summary-value">{{ $presents }}</div>
-                        <div class="summary-subtext">Aujourd’hui</div>
+                        <div class="summary-subtext">Cette semaine</div>
                     </div>
                 </div>
 
@@ -839,7 +842,7 @@
                     <div>
                         <div class="summary-title">Absents</div>
                         <div class="summary-value">{{ $absents }}</div>
-                        <div class="summary-subtext">Aujourd’hui</div>
+                        <div class="summary-subtext">Cette semaine</div>
                     </div>
                 </div>
 

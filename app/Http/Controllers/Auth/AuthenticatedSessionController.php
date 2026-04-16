@@ -15,31 +15,46 @@ class AuthenticatedSessionController extends Controller
      * Display the login view.
      */
     public function create(): View
-    {
-        return view('auth.login');
-    }
+        {
+            return view('auth.login');
+        }
 
-    /**
-     * Handle an incoming authentication request.
-     */
-    public function store(LoginRequest $request): RedirectResponse
-    {
-        if (! Auth::attempt($request->only('email', 'password'))) {
-        return back()->withErrors([
-            'email' => 'Identifiants incorrects'
-        ]);
-    }
+        /**
+         * Handle an incoming authentication request.
+         */
+        public function store(LoginRequest $request): RedirectResponse
+        {
+            if (! Auth::attempt($request->only('email', 'password'))) {
+            return back()->withErrors([
+                'email' => 'Identifiants incorrects'
+            ]);
+        }
 
-    $user = Auth::user();
+        $user = Auth::user();
 
-    // 🚫 BLOQUER ADMIN
-    if ($user->role === 'administrateur') {
-        Auth::logout();
+        // 🚫 BLOQUER ADMIN
+        if ($user->role === 'administrateur') {
+            Auth::logout();
 
-        return back()->withErrors([
-            'email' => 'Utilisez la page admin pour vous connecter.'
-        ]);
-    }
+            return back()->withErrors([
+                'email' => 'Utilisez la page admin pour vous connecter.'
+            ]);
+        }
+
+        // ✅ Régénérer session
+        $request->session()->regenerate();
+
+        // ✅ Redirection selon rôle
+        if ($user->role === 'employe') {
+            return redirect()->route('employe.dashboard');
+        }
+
+        if ($user->role === 'agent_accueil') {
+            return redirect()->route('agent.dashboard');
+        }
+
+        // ⚠️ sécurité fallback obligatoire
+        return redirect('/');
     }
 
     /**
