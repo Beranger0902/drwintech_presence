@@ -1,6 +1,6 @@
 <?php
 
-
+use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DemandeCongeController;
 use App\Http\Controllers\Admin\PermissionController as AdminPermissionController;
@@ -22,7 +22,30 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('home');
+
+// Page choix connexion
+Route::get('/connexion', function () {
+    return view('auth.choix-connexion');
+})->name('choix.connexion');
+
+Route::get('/login', [App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'create'])
+    ->name('login');
+
+Route::get('/admin/login', [AuthController::class, 'showLogin'])->name('admin.login');
+Route::post('/admin/login', [AuthController::class, 'login']);
+
+// FORMULAIRE OTP
+Route::get('/admin/verify', [App\Http\Controllers\Admin\AuthController::class, 'showVerifyForm'])
+    ->name('admin.verify.form');
+
+// TRAITEMENT OTP
+Route::post('/admin/verify', [App\Http\Controllers\Admin\AuthController::class, 'verifyOtp'])
+    ->name('admin.verify');
+
+// RENVOYER OTP
+Route::post('/admin/resend-otp', [App\Http\Controllers\Admin\AuthController::class, 'resendOtp'])
+    ->name('admin.resend.otp');
 
 Route::get('/dashboard', function () {
     $user = auth()->user();
@@ -45,7 +68,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // ADMIN
-        Route::prefix('admin')->name('admin.')->middleware('role:administrateur')->group(function () {
+        Route::prefix('admin')->name('admin.')->middleware('role:administrateur' )->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
         Route::resource('utilisateurs', UserController::class);
@@ -90,5 +113,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/demandes/permissions', [PermissionController::class, 'store'])->name('demandes.permissions.store');
     });
 });
+
+Route::get('/login', function () {
+    return redirect('/admin/login');
+})->name('login');
 
 require __DIR__.'/auth.php';

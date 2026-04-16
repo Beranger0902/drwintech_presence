@@ -24,11 +24,22 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        if (! Auth::attempt($request->only('email', 'password'))) {
+        return back()->withErrors([
+            'email' => 'Identifiants incorrects'
+        ]);
+    }
 
-        $request->session()->regenerate();
+    $user = Auth::user();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+    // 🚫 BLOQUER ADMIN
+    if ($user->role === 'administrateur') {
+        Auth::logout();
+
+        return back()->withErrors([
+            'email' => 'Utilisez la page admin pour vous connecter.'
+        ]);
+    }
     }
 
     /**
