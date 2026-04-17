@@ -85,12 +85,15 @@ class RapportController extends Controller
         if ($employeId) {
             $employe = Employe::find($employeId);
         }
+        
+        $chart = $request->chart;
 
         $pdf = Pdf::loadView('agent.rapports.export.pdf', [
             'rapport' => $rapportPresence,
             'dateDebut' => $dateDebut,
             'dateFin' => $dateFin,
-            'employe' => $employe
+            'employe' => $employe,
+            'chart' => $chart
         ]);
 
         return $pdf->download('rapport.pdf');

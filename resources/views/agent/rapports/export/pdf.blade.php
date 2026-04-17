@@ -30,18 +30,21 @@
             margin-bottom: 15px;
         }
 
-        .stats {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+       .stats {
+            width: 100%;
+            margin: 15px 0;
         }
 
-        .stat {
-            flex: 1;
-            padding: 10px;
+        .stats table {
+            width: 100%;
+        }
+
+        .stat-box {
             color: white;
-            border-radius: 8px;
+            padding: 10px;
             text-align: center;
+            border-radius: 6px;
+            font-size: 13px;
         }
 
         .present { background: #43ad77; }
@@ -49,21 +52,29 @@
         .absent { background: #e56a6a; }
         .conge { background: #7a9cf5; }
 
+        .chart {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .chart img {
+            width: 100%;
+            max-height: 300px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            font-size: 12px;
         }
 
         th {
             background: #f0f5ff;
-            padding: 10px;
-            border: 1px solid #ddd;
-        }
-
-        td {
-            padding: 8px;
-            border: 1px solid #ddd;
         }
 
         .status {
@@ -97,11 +108,22 @@
     </div>
 
     <div class="stats">
-        <div class="stat present">Présents<br>{{ $rapport['stats']['presents'] }}</div>
-        <div class="stat retard">Retards<br>{{ $rapport['stats']['retards'] }}</div>
-        <div class="stat absent">Absents<br>{{ $rapport['stats']['absents'] }}</div>
-        <div class="stat conge">Congés<br>{{ $rapport['stats']['conges'] }}</div>
+        <table>
+            <tr>
+                <td><div class="stat-box present">Présents<br>{{ $rapport['stats']['presents'] }}</div></td>
+                <td><div class="stat-box retard">Retards<br>{{ $rapport['stats']['retards'] }}</div></td>
+                <td><div class="stat-box absent">Absents<br>{{ $rapport['stats']['absents'] }}</div></td>
+                <td><div class="stat-box conge">Congés<br>{{ $rapport['stats']['conges'] }}</div></td>
+            </tr>
+        </table>
     </div>
+
+    @if($chart)
+        <div class="chart">
+            <img src="{{ $chart }}">
+        </div>
+    @endif
+
 
     <table>
         <thead>

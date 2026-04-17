@@ -1536,7 +1536,7 @@
 
                     <div class="modal-footer">
                         <div class="export-actions">
-                            <a 
+                           <a 
                                 href="{{ route('agent.rapports.export.pdf', [
                                     'date_debut' => $dateDebut->format('Y-m-d'),
                                     'date_fin' => $dateFin->format('Y-m-d'),
@@ -1879,11 +1879,26 @@
 
 
             document.querySelectorAll('.btn-pdf').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const params = new URLSearchParams(new FormData(document.getElementById('reportFilterForm')));
-                window.open("/rapports/export/pdf?" + params.toString(), "_blank");
+                btn.addEventListener('click', () => {
+                    const params = new URLSearchParams(new FormData(document.getElementById('reportFilterForm')));
+                    window.open("/rapports/export/pdf?" + params.toString(), "_blank");
+                });
             });
-        });
+
+            function exportPDF() {
+                const canvas = document.getElementById('presenceLineChart');
+                const chartImage = canvas.toDataURL("image/png");
+
+                const params = new URLSearchParams({
+                    date_debut: "{{ $dateDebut->format('Y-m-d') }}",
+                    date_fin: "{{ $dateFin->format('Y-m-d') }}",
+                    employe_id: "{{ $employeId }}",
+                    chart: chartImage
+                });
+
+                window.open("{{ route('agent.rapports.export.pdf') }}?" + params.toString(), "_blank");
+            }
+                        
 
             const loadingWorkModal = document.getElementById('loadingWorkModal');
             const resultWorkModal = document.getElementById('resultWorkModal');
