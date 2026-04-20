@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DemandeCongeController;
 use App\Http\Controllers\Admin\PermissionController as AdminPermissionController;
 use App\Http\Controllers\Admin\EmployeController;
+use App\Http\Controllers\Admin\TempsTravailController;
+use App\Http\Controllers\Admin\RapportController as AdminRapportController;
 use App\Http\Controllers\Admin\StatistiqueController as AdminStatistiqueController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Agent\DashboardController as AgentDashboardController;
@@ -73,6 +75,7 @@ Route::middleware('auth')->group(function () {
 
         Route::resource('utilisateurs', UserController::class);
         Route::resource('employes', EmployeController::class);
+        Route::get('/temps-travail', [TempsTravailController::class, 'index'])->name('temps-travail.index');
         Route::get('/demandes/conges', [DemandeCongeController::class, 'index'])->name('demandes.conges.index');
         Route::patch('/demandes/conges/{demande}/approuver', [DemandeCongeController::class, 'approuver'])->name('demandes.conges.approuver');
         Route::patch('/demandes/conges/{demande}/refuser', [DemandeCongeController::class, 'refuser'])->name('demandes.conges.refuser');
@@ -81,6 +84,10 @@ Route::middleware('auth')->group(function () {
         Route::patch('/demandes/permissions/{demande}/approve', [AdminPermissionController::class, 'approve'])->name('demandes.permissions.approve');
         Route::patch('/demandes/permissions/{demande}/refuse', [AdminPermissionController::class, 'refuse'])->name('demandes.permissions.refuse');
         Route::patch('/demandes/permissions/{demande}/debloquer', [AdminPermissionController::class, 'debloquer'])->name('demandes.permissions.debloquer');
+        Route::get('/rapports', [AdminRapportController::class, 'index'])->name('rapports.index');
+        Route::get('/rapports/export/pdf', [AdminRapportController::class, 'exportPDF'])->name('rapports.export.pdf');
+        Route::get('/rapports/export/work_pdf', [AdminRapportController::class, 'exportWorkPdf'])->name('rapports.export.work_pdf');
+        Route::get('/rapports/export/excel', [AdminRapportController::class, 'exportExcel'])->name('rapports.export.excel');
         Route::get('/statistiques', [AdminStatistiqueController::class, 'index'])->name('statistiques.index');
     });
 
@@ -91,8 +98,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/presences', [PresenceController::class, 'index'])->name('presences.index');
       /*  Route::get('/temps-travail', [TempsTravailController::class, 'index'])->name('temps-travail.index');*/
         Route::get('/rapports', [RapportController::class, 'index'])->name('rapports.index');
-        Route::get('/statistiques', [AgentStatistiqueController::class, 'index'])->name('statistiques.index');
+       /* Route::get('/statistiques', [AgentStatistiqueController::class, 'index'])->name('statistiques.index');*/
         Route::get('/rapports/export/pdf', [RapportController::class, 'exportPDF'])->name('rapports.export.pdf');
+         Route::get('/rapports/export/work_pdf', [AdminRapportController::class, 'exportWorkPdf'])->name('rapports.export.work_pdf');
         Route::get('/rapports/export/excel', [RapportController::class, 'exportExcel'])->name('rapports.export.excel');
     });
 

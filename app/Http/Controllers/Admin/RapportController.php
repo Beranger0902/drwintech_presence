@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Agent;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -11,7 +11,7 @@ use Carbon\Carbon;
 
 class RapportController extends Controller
 {
-   public function index(Request $request)
+    public function index(Request $request)
     {
         $agent = $request->user();
 
@@ -59,7 +59,7 @@ class RapportController extends Controller
             $rapportWork = $this->buildWorkReport($dateDebut, $dateFin, $employeId);
         }
 
-        return view('agent.rapports.index', compact(
+        return view('admin.rapports.index', compact(
             'agent',
             'employes',
             'rapports',
@@ -88,7 +88,7 @@ class RapportController extends Controller
         
         $chart = $request->chart;
 
-        $pdf = Pdf::loadView('agent.rapports.export.pdf', [
+        $pdf = Pdf::loadView('admin.rapports.export.pdf', [
             'rapport' => $rapportPresence,
             'dateDebut' => $dateDebut,
             'dateFin' => $dateFin,
@@ -99,8 +99,9 @@ class RapportController extends Controller
         return $pdf->download('rapport.pdf');
     }
 
+    
 
-     public function exportWorkPdf(Request $request)
+    public function exportWorkPdf(Request $request)
     {
         $dateDebut = Carbon::parse($request->date_debut)->startOfDay();
         $dateFin = Carbon::parse($request->date_fin)->endOfDay();
@@ -113,7 +114,7 @@ class RapportController extends Controller
             $employe = Employe::find($employeId);
         }
 
-        $pdf = Pdf::loadView('agent.rapports.export.work_pdf', [
+        $pdf = Pdf::loadView('admin.rapports.export.work_pdf', [
             'rapport' => $rapportWork,
             'dateDebut' => $dateDebut,
             'dateFin' => $dateFin,

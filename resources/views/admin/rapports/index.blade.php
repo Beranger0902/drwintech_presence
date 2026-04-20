@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rapports - Agent d’accueil</title>
+    <title>Rapports - Admin</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -32,23 +32,23 @@
             --shadow-card: 0 3px 10px rgba(29, 67, 112, 0.05);
         }
 
-        body {
+       body {
             font-family: Arial, sans-serif;
-            background: var(--bg-page);
+            background: #dfe8f5;
             min-height: 100vh;
-            color: var(--text-main);
+            color: #35527c;
             overflow-x: hidden;
             overflow-y: auto;
         }
 
         .page-wrap {
-            width: 1400px;
+            width: 1460px;
             min-height: 900px;
             margin: 16px auto;
-            background: var(--bg-panel);
+            background: #edf3fb;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: var(--shadow);
+            box-shadow: 0 8px 24px rgba(36, 74, 124, 0.08);
             display: grid;
             grid-template-columns: 250px 1fr;
             grid-template-rows: 86px auto;
@@ -60,7 +60,7 @@
         }
 
         .sidebar-top {
-            background: white;
+            background:  white;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -74,12 +74,14 @@
             height: 86px;
             object-fit: contain;
             display: block;
+            background: transparent;
             padding: 6px 10px;
+            border-radius: 12px;
         }
 
         .topbar {
-            background: var(--white);
-            border-bottom: 1px solid var(--border);
+            background: white;
+            border-bottom: 1px solid #dbe5f2;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -89,7 +91,7 @@
 
         .welcome-title {
             font-size: 22px;
-            color: var(--text-main);
+            color: #35527c;
         }
 
         .top-user-dropdown {
@@ -103,12 +105,7 @@
             background: transparent;
             border: none;
             cursor: pointer;
-            color: var(--text-main);
-            transition: transform 0.2s ease;
-        }
-
-        .top-user-btn:hover {
-            transform: translateY(-1px);
+            color: #35527c;
         }
 
         .top-user-btn img {
@@ -128,13 +125,13 @@
         .top-user-info .role {
             font-size: 12px;
             margin-top: 4px;
-            color: var(--text-soft);
+            color: #6d84a3;
             text-align: left;
         }
 
         .top-user-arrow {
             font-size: 16px;
-            color: var(--text-main);
+            color: #35527c;
         }
 
         .top-user-menu {
@@ -142,8 +139,8 @@
             top: 62px;
             right: 0;
             min-width: 170px;
-            background: var(--white);
-            border: 1px solid var(--border);
+            background: white;
+            border: 1px solid #dbe5f2;
             border-radius: 10px;
             box-shadow: 0 8px 20px rgba(36, 74, 124, 0.12);
             display: none;
@@ -164,7 +161,7 @@
             background: transparent;
             border: none;
             text-decoration: none;
-            color: var(--text-main);
+            color: #35527c;
             font-size: 14px;
             cursor: pointer;
         }
@@ -175,11 +172,10 @@
         }
 
         .sidebar {
-            background: var(--bg-panel);
+            background: #edf3fb;
             border-right: 1px solid #d7e2ef;
             padding: 10px 14px 16px;
             overflow: hidden;
-            animation: slideInLeft 0.45s ease;
         }
 
         .sidebar-controls {
@@ -194,18 +190,16 @@
             height: 38px;
             border: none;
             background: transparent;
-            color: var(--text-main);
+            color: #35527c;
             cursor: pointer;
             border-radius: 8px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.2s ease, transform 0.25s ease;
         }
 
         .sidebar-toggle:hover {
             background: #e4edf8;
-            transform: rotate(90deg);
         }
 
         .sidebar-toggle svg {
@@ -222,14 +216,15 @@
             gap: 8px;
         }
 
-        .menu a {
+        .menu a,
+        .menu-dropdown-toggle {
             text-decoration: none;
-            color: var(--text-main);
+            color: #35527c;
             display: flex;
             align-items: center;
             gap: 12px;
             padding: 12px 16px;
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 16px;
             border: none;
             background: transparent;
@@ -237,16 +232,17 @@
             text-align: left;
             cursor: pointer;
             white-space: nowrap;
-            transition: background 0.22s ease, color 0.22s ease, transform 0.22s ease;
+            transition: background 0.2s ease, color 0.2s ease;
         }
 
-        .menu a:hover {
+        .menu a:hover,
+        .menu-dropdown-toggle:hover {
             background: rgba(91, 152, 238, 0.15);
-            transform: translateX(4px);
         }
 
-        .menu a.active {
-            background: var(--blue-soft);
+        .menu a.active,
+        .menu-dropdown.open .menu-dropdown-toggle {
+            background: rgba(91, 152, 238, 0.20);
             border-left: 4px solid #5b98ee;
         }
 
@@ -266,7 +262,43 @@
             fill: none;
         }
 
-        .page-wrap.sidebar-collapsed .menu-text {
+        .menu-separator {
+            height: 1px;
+            background: #d9e3f1;
+            margin: 10px 0;
+        }
+
+        .menu-dropdown {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .menu-arrow {
+            margin-left: auto;
+            font-size: 14px;
+        }
+
+        .menu-submenu {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            margin-left: 34px;
+        }
+
+        .menu-dropdown.open .menu-submenu {
+            display: flex;
+        }
+
+        .menu-submenu a {
+            padding: 10px 14px;
+            font-size: 14px;
+            border-radius: 8px;
+        }
+
+        .page-wrap.sidebar-collapsed .menu-text,
+        .page-wrap.sidebar-collapsed .menu-arrow,
+        .page-wrap.sidebar-collapsed .menu-submenu {
             display: none !important;
         }
 
@@ -274,7 +306,8 @@
             padding: 10px 8px 16px;
         }
 
-        .page-wrap.sidebar-collapsed .menu a {
+        .page-wrap.sidebar-collapsed .menu a,
+        .page-wrap.sidebar-collapsed .menu-dropdown-toggle {
             justify-content: center;
             padding: 12px 8px;
             gap: 0;
@@ -1139,15 +1172,15 @@
 
         <div class="topbar">
             <div class="welcome-title">
-                Bienvenue, {{ $agent->name ?? 'Stéphane Dupont' }}
+                Bienvenue, {{  $admin->name ?? 'Administrateur' }}
             </div>
 
             <div class="top-user-dropdown" id="topUserDropdown">
                 <button type="button" class="top-user-btn" id="topUserBtn">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode($agent->name ?? 'Stephane Dupont') }}&background=ffffff&color=2d6fe0&size=120" alt="Profil">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode($admin->name ?? 'Administrateur') }}&background=ffffff&color=2d6fe0&size=120" alt="Profil">
                     <div class="top-user-info">
-                        <div class="name">{{ $agent->name ?? 'Stéphane Dupont' }}</div>
-                        <div class="role">Agent d’accueil</div>
+                        <div class="name">{{ $admin->name ?? 'Administrateur' }}</div>
+                        <div class="role">Administrateur</div>
                     </div>
                     <span class="top-user-arrow">▾</span>
                 </button>
@@ -1174,7 +1207,7 @@
             </div>
 
             <nav class="menu">
-                <a href="{{ route('agent.dashboard') }}">
+                <a href="{{ route('admin.dashboard') }}">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
                             <path d="M3 10.5L12 3L21 10.5"></path>
@@ -1184,23 +1217,29 @@
                     <span class="menu-text">Tableau de bord</span>
                 </a>
 
-                <a href="{{ route('agent.presences.index') }}">
+                <a href="{{ route('admin.utilisateurs.index') }}">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
-                            <path d="M7 3H17"></path>
-                            <path d="M7 21H17"></path>
-                            <path d="M9 7H15"></path>
-                            <path d="M9 11H15"></path>
-                            <path d="M9 15H13"></path>
-                            <rect x="5" y="3" width="14" height="18" rx="2"></rect>
+                            <circle cx="12" cy="8" r="4"></circle>
+                            <path d="M4 20C4 16.5 7.5 14 12 14C16.5 14 20 16.5 20 20"></path>
                         </svg>
                     </span>
-                    <span class="menu-text">Présences</span>
+                    <span class="menu-text">Utilisateur</span>
                 </a>
 
+                <a href="{{ route('admin.employes.index') }}">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M16 21V19A4 4 0 0 0 12 15H8A4 4 0 0 0 4 19V21"></path>
+                            <circle cx="10" cy="7" r="4"></circle>
+                            <path d="M20 8V14"></path>
+                            <path d="M23 11H17"></path>
+                        </svg>
+                    </span>
+                    <span class="menu-text">Employé</span>
+                </a>
 
-                {{--    
-                <a href="{{ route('agent.temps-travail.index') }}">
+                <a href="{{ route('admin.temps-travail.index') }}">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
                             <path d="M12 8V12L15 15"></path>
@@ -1210,9 +1249,42 @@
                     <span class="menu-text">Temps de travail</span>
                 </a>
 
-                --}}
+                <div class="menu-dropdown" id="menuDropdownDemandes">
+                    <button type="button" class="menu-dropdown-toggle" id="demandesToggle">
+                        <span class="menu-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M4 5H20V19H4Z"></path>
+                                <path d="M8 9H16"></path>
+                                <path d="M8 13H14"></path>
+                            </svg>
+                        </span>
+                        <span class="menu-text">Demandes</span>
+                        <span class="menu-arrow menu-text">▾</span>
+                    </button>
 
-                <a href="{{ route('agent.rapports.index') }}" class="active">
+                    <div class="menu-submenu">
+                        <a href="{{ route('admin.demandes.conges.index') }}">
+                            <span class="menu-text">Congé</span>
+                        </a>
+                        <a href="{{ route('admin.demandes.permissions.index') }}">
+                            <span class="menu-text">Permission</span>
+                        </a>
+                    </div>
+                </div>
+
+                <a href="{{ route('admin.statistiques.index') }}">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 19V11"></path>
+                            <path d="M10 19V5"></path>
+                            <path d="M16 19V13"></path>
+                            <path d="M22 19V9"></path>
+                        </svg>
+                    </span>
+                    <span class="menu-text">Statistiques</span>
+                </a>
+
+                <a href="{{ route('admin.rapports.index') }}" class="active">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24">
                             <path d="M4 19V5A2 2 0 0 1 6 3H14L20 9V19A2 2 0 0 1 18 21H6A2 2 0 0 1 4 19Z"></path>
@@ -1230,13 +1302,13 @@
             <div class="content-header">
                 <div class="content-title">Rapports</div>
                 <div class="breadcrumb">
-                    <a href="{{ route('agent.dashboard') }}">Accueil</a>
+                    <a href="{{ route('admin.dashboard') }}">Accueil</a>
                     &nbsp; / &nbsp;
                     <span>Rapports</span>
                 </div>
             </div>
 
-            <form method="GET" action="{{ route('agent.rapports.index') }}" class="toolbar-card" id="reportFilterForm">
+            <form method="GET" action="{{ route('admin.rapports.index') }}" class="toolbar-card" id="reportFilterForm">
                 <div class="toolbar-title">Enregistrements: {{ $totalRapports }} résultats</div>
 
                 <div class="toolbar-form">
@@ -1537,7 +1609,7 @@
                     <div class="modal-footer">
                         <div class="export-actions">
                            <a 
-                                href="{{ route('agent.rapports.export.pdf', [
+                                href="{{ route('admin.rapports.export.pdf', [
                                     'date_debut' => $dateDebut->format('Y-m-d'),
                                     'date_fin' => $dateFin->format('Y-m-d'),
                                     'employe_id' => $employeId
@@ -1664,7 +1736,7 @@
                         <div class="modal-footer">
                             <div class="export-actions">
                                 <a 
-                                    href="{{ route('agent.rapports.export.work_pdf', [
+                                    href="{{ route('admin.rapports.export.work_pdf', [
                                         'date_debut' => $dateDebut->format('Y-m-d'),
                                         'date_fin' => $dateFin->format('Y-m-d'),
                                         'employe_id' => $employeId
@@ -1678,7 +1750,7 @@
                                         <path d="M8 17H16"></path>
                                     </svg>
                                     Exporter en PDF
-                                </a>
+                                </a
 
                                 {{--   
                                 <button type="button" class="btn-export btn-excel">
@@ -1707,6 +1779,9 @@
             const topUserBtn = document.getElementById('topUserBtn');
             const topUserMenu = document.getElementById('topUserMenu');
             const topUserDropdown = document.getElementById('topUserDropdown');
+             const demandesToggle = document.getElementById('demandesToggle');
+            const demandesDropdown = document.getElementById('menuDropdownDemandes');
+
 
             const loadingModal = document.getElementById('loadingModal');
             const resultModal = document.getElementById('resultModal');
@@ -1727,6 +1802,15 @@
                 topUserBtn.addEventListener('click', function (e) {
                     e.stopPropagation();
                     topUserMenu.classList.toggle('show');
+                });
+            }
+
+             if (demandesToggle) {
+                demandesToggle.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    if (!pageWrap.classList.contains('sidebar-collapsed')) {
+                        demandesDropdown.classList.toggle('open');
+                    }
                 });
             }
 
@@ -1758,7 +1842,7 @@
                         const formData = new FormData(filterForm);
                         const params = new URLSearchParams(formData);
                         params.set('generate', 'presence');
-                        window.location.href = "{{ route('agent.rapports.index') }}?" + params.toString();
+                        window.location.href = "{{ route('admin.rapports.index') }}?" + params.toString();
                     }, 1500);
                 });
             }
@@ -1903,7 +1987,7 @@
                     chart: chartImage
                 });
 
-                window.open("{{ route('agent.rapports.export.pdf') }}?" + params.toString(), "_blank");
+                window.open("{{ route('admin.rapports.export.pdf') }}?" + params.toString(), "_blank");
             }
                         
 
@@ -1937,7 +2021,7 @@
                         const formData = new FormData(filterForm);
                         const params = new URLSearchParams(formData);
                         params.set('generate', 'work');
-                        window.location.href = "{{ route('agent.rapports.index') }}?" + params.toString();
+                        window.location.href = "{{ route('admin.rapports.index') }}?" + params.toString();
                     }, 1500);
                 });
             }

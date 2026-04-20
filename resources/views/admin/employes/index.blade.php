@@ -800,6 +800,16 @@
                     <span class="menu-text">Employé</span>
                 </a>
 
+                <a href="{{ route('admin.temps-travail.index') }}">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 8V12L15 15"></path>
+                            <circle cx="12" cy="12" r="9"></circle>
+                        </svg>
+                    </span>
+                    <span class="menu-text">Temps de travail</span>
+                </a>
+
                 <div class="menu-dropdown {{ request()->routeIs('admin.demandes.*') ? 'open' : '' }}" id="menuDropdownDemandes">
                     <button type="button" class="menu-dropdown-toggle" id="demandesToggle">
                         <span class="menu-icon">
@@ -834,6 +844,19 @@
                     </span>
                     <span class="menu-text">Statistiques</span>
                 </a>
+
+                <a href="{{ route('admin.rapports.index') }}">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 19V5A2 2 0 0 1 6 3H14L20 9V19A2 2 0 0 1 18 21H6A2 2 0 0 1 4 19Z"></path>
+                            <path d="M14 3V9H20"></path>
+                            <path d="M8 13H16"></path>
+                            <path d="M8 17H13"></path>
+                        </svg>
+                    </span>
+                    <span class="menu-text">Rapports</span>
+                </a>
+                
             </nav>
         </aside>
 
